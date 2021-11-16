@@ -5,7 +5,7 @@
                 <b-button  variant="outline-primary" class="room-button" v-b-modal.create-room >创建房间</b-button>
             </div>
             <div class="button-space">
-                <b-button variant="outline-primary" class="room-button" @click="addRoom">加入房间</b-button>
+                <b-button variant="outline-primary" class="room-button" v-b-modal.add-room>加入房间</b-button>
             </div>
         </div>
         <div class="profile-space">
@@ -18,16 +18,49 @@
         title="Create Room"
         @show="resetModal"
         @hidden="resetModal"
-        @ok="handleOk"
+        @ok="createRoom"
         >
         <form ref="form" @submit.stop.prevent="handleSubmit">
             <b-form-group
-            label="游戏模式"
-            label-for="game-type-input"
-            invalid-feedback="required"
-            :state="nameState"
+            id="select-group-1"
+            label="游戏模式:"
+            label-for="select-1"
+            description="选择游戏模式"
             >
-            <b-form-select v-model="gameTypeSelected" :options="gameTypes"></b-form-select>
+            <b-form-select
+            id="select-1"
+             v-model="form.gameType" :options="gameTypes"
+             style="width:80%;" class="mt-3"></b-form-select>
+            </b-form-group>
+            <b-form-group
+            id="select-group-2"
+            label="游戏人数"
+            label-for="select-2"
+            description="选择游戏人数"
+            >
+            <b-form-select
+            id="select-1"
+             v-model="form.playerNumber" :options="gamePlay"
+             style="width:80%;"></b-form-select>
+            </b-form-group>
+        </form>
+        </b-modal>
+        <b-modal
+        id="add-room"
+        ref="create-room-modal"
+        title="Add Room"
+        @show="resetModal"
+        @hidden="resetModal"
+        @ok="createRoom"
+        >
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+            <b-form-group
+            id="select-group-1"
+            label="游戏模式:"
+            label-for="select-1"
+            description="选择游戏模式"
+            >
+            
             </b-form-group>
         </form>
         </b-modal>
@@ -37,7 +70,10 @@
 export default {
     data() {
         return{
-           gameTypeSelected: '猜歌挑战',
+            form:{
+                gameType: '猜歌挑战',
+                playerNumber: 2
+            },
            gameTypes:[{
                value: '猜歌挑战',
                text: '猜歌挑战'
@@ -49,15 +85,23 @@ export default {
            {
                value: '冲关挑战',
                text: '冲关挑战'
-           }]
+           }],
+           gamePlay:[2,3,4,5,6]
         }
     },
     methods: {
         createRoom: function(){
-
+            console.log("你创建了房间")
+            console.log("房间信息" ,this.form)
         },
         addRoom: function(){
 
+        },
+        resetModal: function(){
+            this.form = {
+                gameType: '猜歌挑战',
+                playerNumber: 2
+            }
         }
     },
     computed: {

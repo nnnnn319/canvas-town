@@ -20,11 +20,13 @@ export default {
     methods: {
         onSubmit(){
             // 检查是否重复
-            // @get 请求，检查是否重复
+            // url:/registerName
+            // method: post
             /**
              * code here
              */
             
+            // 前端保存
             localStorage.setItem("name",this.name)
             // 校验通过之后，进入gameHome
             this.$router.push({
