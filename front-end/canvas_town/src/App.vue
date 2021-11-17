@@ -1,18 +1,20 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <Home></Home>
+    <!-- <img alt="Vue logo" src="./assets/logo.png">
+    <Home></Home> -->
+    <router-view />
   </div>
 </template>
 
 <script>
-import Home from './components/common/Home.vue'
+// import Home from './components/common/Home.vue'
 
 export default {
-  name: 'App',
-  components: {
-    Home
-  }
+  name: 'App'
+  // components: {
+  //   Home,
+  //   Interaction
+  // }
 }
 </script>
 
@@ -21,8 +23,8 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>

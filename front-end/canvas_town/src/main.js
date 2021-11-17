@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import App from './App.vue'
 // 全局路由
 import router from './router'
@@ -10,6 +12,7 @@ import BASE_URL from './config.js'
 // 网络请求
 import axios from 'axios'
 
+Vue.use(ElementUI);
 // 消除开发者提示
 Vue.config.productionTip = false
 
