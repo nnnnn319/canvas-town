@@ -11,11 +11,18 @@
         <!-- 左侧聊天区域 -->
         <div class="left-box">
           <div class="chat">
+            <div id="chat-father" @scroll="scrollFun($event)" ref="chat-fa">
+                <ul id="chat-content">
+                    <li v-for="item in items" :key="item.message" id="chat-item">
+                        {{item.message}}
+                    </li>
+                </ul> 
+            </div> 
             <div class="chat-contain">
               <div class="chat-footer">
-                <el-input class="input-content" placeholder="请输入聊天内容" prefix-icon="el-icon-edit" v-model="input2">
+                <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold prefix-icon="el-icon-edit" v-model="input2">
                 </el-input>
-                <i class="el-icon-chat-dot-square shortcut" @click="unfold"></i>
+                <button @click="unfold" id="sendMessage">发送</button>
               </div>
             </div>
           </div>
@@ -71,6 +78,8 @@ export default {
     return {
       input2: '',
       percentage: 10,
+      allContent:[],
+      items:[{message:'test sentence1'},{message:'test sentence2'}],
       users: [
         {
           id: 0,
@@ -96,7 +105,33 @@ export default {
   },
   methods: {
     //   展开快捷会话的弹窗
-    unfold () { },
+    unfold () { //点击聊天气泡触发该函数
+        
+        // 将输入push到数组中
+        if(this.input2!=''){
+            this.items.push({message:this.input2});
+            
+            // console.log(document.querySelector('#chat-father'));
+
+            //判断是否猜测正确
+            // if(this.input2=='歌名'){
+            //     alert('猜对了！');
+            // }else{
+            //     alert('请再接再厉');
+            // }
+
+            //2个元素 第一个显示发送者
+            //如果猜测的内容正确，显示时会被加密
+
+            this.input2 = '';
+        }else{
+            alert('请输入内容后再发送');
+        }
+        
+    },
+    scrollFun(){//溢出时保持滚动条在底部
+        this.scrollIntoViewIfNeeded(true);
+    },
     exit () { },
     format (percentage) {
       return `${percentage}s`;
@@ -163,6 +198,27 @@ export default {
   width: 100%;
   width: 100%;
   box-sizing: border-box;
+}
+/* 显示所有的发言记录 */
+#chat-content{
+    border: solid 1px #F5F5F5;
+    font-size: 14px;
+    height: 430px;
+    width: 280px;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 5px;
+    overflow:auto;
+}
+/* 每一条新发言 */
+#chat-item{
+    border: none;
+    border-radius: 10px;
+    height: fit-content;
+    width: fit-content;
+    margin: 5px;
+    padding: 5px;
+    background-color: #E1F5FE;
 }
 .input-content {
   width: 200px;
