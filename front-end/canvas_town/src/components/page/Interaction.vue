@@ -20,7 +20,7 @@
             </div> 
             <div class="chat-contain">
               <div class="chat-footer">
-                <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold prefix-icon="el-icon-edit" v-model="input2">
+                <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
                 </el-input>
                 <button @click="unfold" id="sendMessage">发送</button>
               </div>
