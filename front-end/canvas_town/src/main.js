@@ -9,7 +9,7 @@ import router from './router'
 // import socketio from 'socket.io-client'
 
 // 全局基础URL => 后台服务器地址
-import BASE_URL from './config.js'
+//import BASE_URL from './config.js'
 
 // 网络请求
 import axios from 'axios'
@@ -27,10 +27,11 @@ Vue.use(IconsPlugin)
 // 消除开发者提示
 Vue.config.productionTip = false
 
+// 默认请求前缀
+axios.defaults.baseURL = "http://localhost:3000"
 // 全局网络请求
 Vue.prototype.$axios = axios
-// 默认请求前缀
-axios.defaults.baseURL = BASE_URL.SERVER_URL
+
 
 // 使用socket.io
 // Vue.use(new VueSocketIO({

@@ -11,6 +11,7 @@
         <div class="profile-space">
             <b-img  rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;" ></b-img>
             <p id="profile-name">{{username}}</p>
+            <button @click="logout">退出登录</button>
         </div>
         <b-modal
         id="create-room"
@@ -51,16 +52,17 @@
         title="Add Room"
         @show="resetModal"
         @hidden="resetModal"
-        @ok="createRoom"
+        @ok="addRoom"
         >
         <form ref="form" @submit.stop.prevent="handleSubmit">
             <b-form-group
             id="select-group-1"
-            label="游戏模式:"
-            label-for="select-1"
-            description="选择游戏模式"
+            label="请输入您要加入的房间号:"
+            label-for="input-1"
             >
-            
+            <b-input
+            id="input-1"
+            v-model="roomNumber"></b-input>
             </b-form-group>
         </form>
         </b-modal>
@@ -86,7 +88,8 @@ export default {
                value: '冲关挑战',
                text: '冲关挑战'
            }],
-           gamePlay:[2,3,4,5,6]
+           gamePlay:[2,3,4,5,6],
+           roomNumber: ""
         }
     },
     methods: {
@@ -95,13 +98,33 @@ export default {
             console.log("房间信息" ,this.form)
         },
         addRoom: function(){
-
+            console.log("你加入了房间")
+            console.log("房间信息" ,this.roomNumber)
         },
         resetModal: function(){
             this.form = {
                 gameType: '猜歌挑战',
                 playerNumber: 2
             }
+            this.roomNumber=""
+        },
+        logout(){
+            this.$axios({
+                url: `/users/logout`,
+                method: 'post',
+                data:{username: localStorage.getItem(`name`)}
+            }).then((res)=>{
+                let code = res.data.code
+                if(code === 0){
+                    alert("退出登录成功")
+                }else{
+                    alert("退出登录成功,但有错误："+res.data.msg)
+                }
+            })
+            // 移除缓存
+            localStorage.removeItem("name")
+            // 跳转到引导页
+            this.$router.push("/")
         }
     },
     computed: {
