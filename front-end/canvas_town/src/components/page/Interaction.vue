@@ -33,7 +33,7 @@
           <div class="users">
             <el-scrollbar style="height:100%">
               <ul>
-                <li v-for="(user,i) in users" :key="i">
+                <li v-for="user in users" :key="user.id">
                   <div class="user">
                     <i class="el-icon-microphone" v-if="user.status" :class="{microphone:user.status}"></i>
                     <div class="avatar " :class="{'cur-avatar':user.status}"></div>
@@ -43,7 +43,7 @@
                     </div>
                   </div>
                 </li>
-                <li v-for="(n,i) in emptyNum" :key="i">
+                <li v-for="(n,i) in emptyNum" :key="i+'only'">
                   <div class="user">
                     <div class="avatar empty">
                       <i class="el-icon-user-solid"></i>
@@ -71,16 +71,19 @@ export default {
       percentage: 10,
       users: [
         {
+          id: 0,
           status: 1,
           username: 'xiaoming',
           score: 24
         },
         {
+          id: 1,
           status: 0,
           username: 'lily',
           score: 20
         },
         {
+          id: 3,
           status: 0,
           username: 'hhhhh',
           score: 30
@@ -224,7 +227,7 @@ li {
   left: 30px;
   top: 50%;
   transform: translateY(-50%);
-  background: url("../assets/avatar.jpg");
+  background: url("~@/assets/img/avatar.jpg");
   background-size: cover;
   text-align: center;
 }
@@ -244,7 +247,7 @@ li {
 .empty {
   border: 3px solid gray;
   background: url();
-  font-size: 47px;
+  font-size: 37px;
   color: gray;
 }
 .info-empty {

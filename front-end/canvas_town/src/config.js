@@ -4,7 +4,8 @@ let BASE_URL = {
      */
 
     // 服务器地址
-    SERVER_URL : 'http://121.199.160.39:8080'
+    // SERVER_URL : 'http://121.199.160.39:8080'
+    SERVER_URL : 'http://localhost:3000'
 }
 
 exports.defaults = BASE_URL
