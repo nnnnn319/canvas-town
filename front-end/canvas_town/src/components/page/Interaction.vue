@@ -29,7 +29,6 @@
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
-
           <div class="users">
             <el-scrollbar style="height:100%">
               <ul>
@@ -55,15 +54,18 @@
             </el-scrollbar>
           </div>
         </div>
+        <choose-qestion class="choose-question"></choose-qestion>
       </div>
     </div>
 
   </div>
 </template>
 <script>
+import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
+    ChooseQestion
   },
   data () {
     return {
@@ -136,6 +138,7 @@ export default {
   justify-content: space-between;
 }
 .room {
+  position: relative;
   display: flex;
   justify-content: space-between;
   width: 842px;
@@ -252,5 +255,10 @@ li {
 }
 .info-empty {
   color: gray;
+}
+.choose-question {
+  position: absolute;
+  top: 99px;
+  left: 348px;
 }
 </style>
