@@ -220,6 +220,18 @@ export default {
     padding: 5px;
     background-color: #E1F5FE;
 }
+/* 发送按钮 */
+#sendMessage{
+    display: inline;
+    border: none;
+    border-radius: 10px;
+    background-color: #0D47A1;
+    color: white;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
 .input-content {
   width: 200px;
   height: 30px;
