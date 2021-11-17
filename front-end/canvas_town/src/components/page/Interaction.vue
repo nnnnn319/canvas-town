@@ -3,7 +3,7 @@
     <div class="interact-contain">
       <div class="header">
         <div class="logo">
-          猜歌名
+          倒放挑战1号房间
         </div>
         <i class="el-icon-close exit" @click="exit"></i>
       </div>
@@ -156,6 +156,15 @@ export default {
 * {
   margin: 0;
   padding: 0;
+}
+.logo{
+    font-size: 2em;
+    text-align: center;
+    background-color: #FFE652;
+    padding: 5px 20px;
+    margin: 10px 0;
+    opacity: .8;
+    border-radius: 10px;
 }
 /* body的8px要去掉 */
 .interact {
