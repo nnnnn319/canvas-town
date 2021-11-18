@@ -29,12 +29,23 @@
         </div>
         <!-- 音乐可视化区域 -->
         <div class="center-box">
-          <div class="music-bg">
+          <div class="time">
+            <i class="el-icon-alarm-clock"></i>10s
           </div>
-          <el-progress :percentage="percentage" :format="format"></el-progress>
-          <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
-          <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
-          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>
+          <div class="preparation" v-if="false">
+            <el-button type="primary" class="beginGame" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+            <el-button type="success" class="readyGame" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>
+          </div>
+          <div class="already-play">
+            <el-button type="primary" class="began-to-challenge beginGame" @click="startChallenge()">开始挑战</el-button>
+            <!--上传文件-->
+            <el-upload class="upload-demo" multiple action="#" :limit="1" :on-change="handleChange" :file-list="fileList">
+              <el-button size="small" class="choose-file" type="primary">选择文件</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+            <el-button type="success" class="upload-file readyGame" @click="sendFile()">上传文件</el-button>
+          </div>
+          <!--    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>-->
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
@@ -67,21 +78,6 @@
         <!-- <choose-qestion class="choose-question"></choose-qestion> -->
       </div>
     </div>
-    <button @click="startChallenge()">开始挑战</button>
-    <button @click="sendFile()">上传文件</button>
-
-    <!--上传文件-->
-    <el-upload
-            class="upload-demo"
-            multiple
-            action="#"
-            :limit="1"
-            :on-change	="handleChange"
-            :file-list="fileList">
-      <el-button size="small" type="primary">点击上传</el-button>
-      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-    </el-upload>
-    <!--    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>-->
   </div>
 </template>
 <script>
@@ -98,10 +94,10 @@ export default {
       //房间成员
       room_mem: [],
       // status  socketid标记每个成员状态 是否准备好
-  //     [
-  //             { status: false, id: 'epXaT08UqmPz9BxNAAAF' },
-  //             { status: true, id: 'Fl360SbysEi3l2EVAAAH' }
-  //     ]
+      //     [
+      //             { status: false, id: 'epXaT08UqmPz9BxNAAAF' },
+      //             { status: true, id: 'Fl360SbysEi3l2EVAAAH' }
+      //     ]
       status: [],
       //出题人socketId
       q_socket: '',
@@ -112,6 +108,36 @@ export default {
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
       users: [
+        {
+          id: 0,
+          status: 1,
+          username: 'xiaoming',
+          score: 24,
+          userType: 'admin',
+          ready: false
+        },
+        {
+          id: 1,
+          status: 0,
+          username: 'lily',
+          score: 20,
+          userType: 'player',
+          ready: false
+        },
+        {
+          id: 3,
+          status: 0,
+          username: 'hhhhh',
+          score: 30,
+          userType: 'player',
+          ready: false
+        }
+      ],
+      userSelf: {
+        username: 'xiaoming',
+        userType: 'admin',
+        ready: false
+      },
       // userSelf: {
       //   username: 'lily',
       //   userType: 'player',
@@ -170,27 +196,20 @@ export default {
       }
       //发送准备
     },
-    // 倒计时
-    countDown () {
-      var count = 100
-      setInterval(() => {
-        this.percentage = count
-      }, 100)
-    },
     //socket方法
     //try 发送room房间号
     sendRoomNum () {
       this.$socket.emit('room', this.socketId, '1')
     },
     //开始挑战方法
-    startChallenge() {
+    startChallenge () {
       this.$socket.emit('start challenge', this.socketId)
     },
-    sendFile() {
+    sendFile () {
       this.$socket.emit('get exam', this.socketId, 'file')
     },
     //上传文件
-    handleChange(file, fileList) {
+    handleChange (file, fileList) {
       console.log('上传文件相关')
       console.log(file)
       console.log(fileList)
@@ -198,7 +217,6 @@ export default {
 
   },
   created () {
-
   },
   mounted () {
     console.log('page mounted')
@@ -214,45 +232,47 @@ export default {
       console.log(arr)
       this.room_mem = arr
       this.users = [];
-        var obj = {
-            id:'',
-            status: 0,
-            username: 'get from db',
-            score: 0,
-            userType: 'admin',
+      var obj = {
+        id: '',
+        status: 0,
+        username: 'get from db',
+        score: 0,
+        userType: 'admin',
 
-        }
-        for(let i=0;i<this.room_mem.length;i++){
-            obj.id = this.room_mem[i].id;
-            this.users.push(obj);
-        } 
+      }
+      for (let i = 0; i < this.room_mem.length; i++) {
+        obj.id = this.room_mem[i].id;
+        this.users.push(obj);
+      }
     },
     //人数不够 获取每个人的状态
-    status(status) {
+    status (status) {
       console.log('get status')
       console.log(status)
       this.status = status
     },
-    member(mem) {
+    member (mem) {
       console.log('出题人socketId ' + mem)
       this.q_socket = mem
     },
-    exam(file) {
-      console.log('收到题目 '+ file)
+    exam (file) {
+      console.log('收到题目 ' + file)
     },
-    reverse_exam(file) {
-      console.log('出题人收到 '+file)
+    reverse_exam (file) {
+      console.log('出题人收到 ' + file)
       this.$socket.emit('answer', this.socketId)
     },
-    time(time) {
+    time (time) {
       console.log(time)
-      this.percentage = time*2
+      this.percentage = time * 2
     }
   },
   computed: {
     emptyNum: function () {
       return this.userNum - this.users.length
     }
+  },
+  watch: {
   }
 }
 </script>
@@ -366,6 +386,9 @@ export default {
   height: 300px;
   border-radius: 10px;
 }
+.center-box {
+  position: relative;
+}
 .right-box {
 }
 .exit {
@@ -450,5 +473,49 @@ li {
 }
 .readybtn {
   background-color: #e6e6e4;
+}
+.time {
+  width: 150px;
+  font-size: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 3px solid #000;
+  border-radius: 20px;
+  background-color: #a6e3e9;
+  padding: 10px 20px;
+}
+.el-button + .el-button {
+  margin-left: 0;
+}
+.readyGame {
+  width: 85px;
+  height: 35px;
+  position: absolute;
+  top: 154px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.beginGame {
+  width: 85px;
+  height: 35px;
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.choose-file {
+  width: 85px;
+  height: 35px;
+  background-color: grey;
+  /* position: absolute;
+  top: 200px;
+  left: 50%;
+  transform: translateX(-50%); */
+}
+.upload-demo {
+  text-align: center;
+  position: absolute;
+  top: 230px;
 }
 </style>
