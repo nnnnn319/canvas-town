@@ -16,6 +16,9 @@ import router from './router'
 // 网络请求
 import axios from 'axios'
 
+import SocketIO from "socket.io-client"
+
+import VueSocketIO from 'vue-socket.io'
 
 // BootStrapVue 文档地址 https://bootstrap-vue.org/docs
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -58,7 +61,15 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketIO ('http://127.0.0.1:3000'),
+}))
+
 new Vue({
   router,
   render: h => h(App),
 }).$mount('#app')
+
+
+

@@ -76,6 +76,10 @@ export default {
   },
   data () {
     return {
+      //socketId 每次发送请求都要携带
+      socketId: '',
+      //房间成员
+      room_mem: [],
       input2: '',
       percentage: 10,
       allContent:[],
@@ -106,28 +110,22 @@ export default {
   methods: {
     //   展开快捷会话的弹窗
     unfold () { //点击聊天气泡触发该函数
-        
         // 将输入push到数组中
         if(this.input2!=''){
             this.items.push({message:this.input2});
-            
             // console.log(document.querySelector('#chat-father'));
-
             //判断是否猜测正确
             // if(this.input2=='歌名'){
             //     alert('猜对了！');
             // }else{
             //     alert('请再接再厉');
             // }
-
             //2个元素 第一个显示发送者
             //如果猜测的内容正确，显示时会被加密
-
             this.input2 = '';
         }else{
             alert('请输入内容后再发送');
         }
-        
     },
     scrollFun(){//溢出时保持滚动条在底部
         this.scrollIntoViewIfNeeded(true);
@@ -142,9 +140,32 @@ export default {
       setInterval(() => {
         this.percentage = count
       }, 100)
+    },
+    //socket方法
+    //try 发送room房间号
+    sendRoomNum() {
+      this.$socket.emit('room', this.socketId, '1')
+    }
+
+  },
+  created () {
+
+  },
+  mounted() {
+    console.log('page mounted')
+    //连接成功 获取ID
+    this.socketId = this.$socket.id
+    console.log(this.socketId)
+    //获取房间成员函数
+    this.sendRoomNum()
+  },
+  sockets: {
+    room_member(arr) {
+      console.log('room_member')
+      console.log(arr)
+      this.room_mem = arr
     }
   },
-  created () { },
   computed: {
     emptyNum: function () {
       return this.userNum - this.users.length
