@@ -14,8 +14,8 @@
         <!-- 左侧聊天区域 -->
         <div class="left-box">
           <div class="chat">
-            <div id="chat-father" @scroll="scrollFun($event)" ref="chat-fa">
-              <ul id="chat-content">
+            <div id="chat-father" ref="chatInnerDiv">
+              <ul id="chat-content" ref="chatUl">
                 <li v-for="item in items" :key="item.message" id="chat-item">
                   {{item.message}}
                 </li>
@@ -32,7 +32,8 @@
         </div>
         <!-- 音乐可视化区域 -->
         <div class="center-box">
-          <div class="music-bg">
+          <div class="time">
+            <i class="el-icon-alarm-clock"></i>10s
           </div>
           <el-progress :percentage="percentage" :format="format"></el-progress>
           <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
@@ -40,6 +41,8 @@
 <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
           <!--上传文件-->
           <div v-show="(this.q_socket == this.socketId)">
+              <br/>
+              <br/>
             <el-upload
                     class="upload-demo"
                     multiple
@@ -70,6 +73,22 @@
           <div>
             {{judge_result}}
           </div>
+<!--=======-->
+<!--          <div class="preparation" v-if="false">-->
+<!--            <el-button type="primary" class="beginGame" v-if="userSelf.userType === 'admin'">开始游戏</el-button>-->
+<!--            <el-button type="success" class="readyGame" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
+<!--          </div>-->
+<!--          <div class="already-play">-->
+<!--            <el-button type="primary" class="began-to-challenge beginGame" @click="startChallenge()">开始挑战</el-button>-->
+<!--            &lt;!&ndash;上传文件&ndash;&gt;-->
+<!--            <el-upload class="upload-demo" multiple action="#" :limit="1" :on-change="handleChange" :file-list="fileList">-->
+<!--              <el-button size="small" class="choose-file" type="primary">选择文件</el-button>-->
+<!--              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+<!--            </el-upload>-->
+<!--            <el-button type="success" class="upload-file readyGame" @click="sendFile()">上传文件</el-button>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>&ndash;&gt;-->
+<!--&gt;>>>>>> dad9c82441f529471d8cd5bf5071d5b2764012e6-->
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
@@ -103,10 +122,12 @@
           </div>
         </div>
         <!-- <choose-qestion class="choose-question"></choose-qestion> -->
+        <div class="profile-space">
+          <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
+          <p id="profile-name">username</p>
+        </div>
       </div>
     </div>
-<!--    <button @click="sendFile()">上传文件</button>-->
-
   </div>
 </template>
 <script>
@@ -123,10 +144,10 @@ export default {
       //房间成员
       room_mem: [],
       // status  socketid标记每个成员状态 是否准备好
-  //     [
-  //             { status: false, id: 'epXaT08UqmPz9BxNAAAF' },
-  //             { status: true, id: 'Fl360SbysEi3l2EVAAAH' }
-  //     ]
+      //     [
+      //             { status: false, id: 'epXaT08UqmPz9BxNAAAF' },
+      //             { status: true, id: 'Fl360SbysEi3l2EVAAAH' }
+      //     ]
       status: [],
       //出题人socketId
       q_socket: '',
@@ -170,6 +191,9 @@ export default {
         // this.items.push({ message: this.input2 });
         //发送到后端
         this.$socket.emit('chat message', this.input2, this.socketId)
+        //聊天框溢出事件触发
+        this.chatUl();
+        // this.items.push({ message: this.input2 });
         // console.log(document.querySelector('#chat-father'));
         //判断是否猜测正确
         // if(this.input2=='歌名'){
@@ -184,8 +208,12 @@ export default {
         alert('请输入内容后再发送');
       }
     },
-    scrollFun () {//溢出时保持滚动条在底部
-      this.scrollIntoViewIfNeeded(true);
+    chatUl () {
+      let chatUl = this.$refs.chatUl;
+      let chatInnerDiv = this.$refs.chatInnerDiv;
+      if (chatUl.scrollHeight > chatInnerDiv.clientHeight) {
+        chatUl.scrollTop = 490;
+      }
     },
     exit () { },
     format (percentage) {
@@ -214,28 +242,21 @@ export default {
       }
       //发送准备
     },
-    // 倒计时
-    countDown () {
-      var count = 100
-      setInterval(() => {
-        this.percentage = count
-      }, 100)
-    },
     //socket方法
     //try 发送room房间号
     sendRoomNum () {
       this.$socket.emit('room', this.socketId, '1')
     },
     //开始挑战方法
-    startChallenge() {
+    startChallenge () {
       this.$socket.emit('start challenge', this.socketId)
 
     },
-    sendFile() {
+    sendFile () {
       this.$socket.emit('get exam', this.socketId, 'file')
     },
     //上传文件
-    handleChange(file, fileList) {
+    handleChange (file, fileList) {
       console.log('上传文件相关')
       console.log(file)
       console.log(fileList)
@@ -426,7 +447,6 @@ export default {
 
   },
   created () {
-
   },
   mounted () {
     console.log('page mounted')
@@ -479,8 +499,7 @@ export default {
         }
       }
     },
-    member(mem) {
-      //每次出题开始
+    member (mem) {
       console.log('出题人socketId ' + mem)
       //修改变量正在出题
       this.isQing = true
@@ -494,14 +513,14 @@ export default {
       //初始化一些变量
       this.judge_result = ''
     },
-    exam(file) {
-      console.log('收到题目 '+ file)
+    exam (file) {
+      console.log('收到题目 ' + file)
     },
-    reverse_exam(file) {
-      console.log('出题人收到 '+file)
+    reverse_exam (file) {
+      console.log('出题人收到 ' + file)
       this.$socket.emit('answer', this.socketId)
     },
-    time(time) {
+    time (time) {
       console.log(time)
       this.percentage = time*2
       if(time === 1) {
@@ -534,6 +553,8 @@ export default {
     emptyNum: function () {
       return this.userNum - this.users.length
     }
+  },
+  watch: {
   }
 }
 </script>
@@ -565,6 +586,7 @@ export default {
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .room {
   position: relative;
@@ -579,9 +601,9 @@ export default {
   position: relative;
   width: 300px;
   height: 500px;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .chat-contain {
   padding: 10px;
@@ -595,7 +617,7 @@ export default {
 }
 /* 显示所有的发言记录 */
 #chat-content {
-  border: solid 1px #f5f5f5;
+  border: solid 1px rgba(255, 255, 255, 0.3);
   font-size: 14px;
   height: 430px;
   width: 280px;
@@ -647,6 +669,9 @@ export default {
   height: 300px;
   border-radius: 10px;
 }
+.center-box {
+  position: relative;
+}
 .right-box {
 }
 .exit {
@@ -664,15 +689,16 @@ export default {
   border: 1px solid #fff;
   border-radius: 10px;
   overflow: auto;
-}
-ul {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 li {
   position: relative;
   list-style: none;
-  background-color: #fff;
   height: 83px;
-  border: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+li:last-child {
+  border: none;
 }
 .microphone {
   position: absolute;
@@ -731,5 +757,61 @@ li {
 }
 .readybtn {
   background-color: #e6e6e4;
+}
+.time {
+  width: 150px;
+  font-size: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 3px solid #000;
+  border-radius: 20px;
+  background-color: #a6e3e9;
+  padding: 10px 20px;
+}
+.el-button + .el-button {
+  margin-left: 0;
+}
+.readyGame {
+  width: 85px;
+  height: 35px;
+  position: absolute;
+  top: 154px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.beginGame {
+  width: 85px;
+  height: 35px;
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.choose-file {
+  width: 85px;
+  height: 35px;
+  background-color: grey;
+  /* position: absolute;
+  top: 200px;
+  left: 50%;
+  transform: translateX(-50%); */
+}
+.upload-demo {
+  text-align: center;
+  position: absolute;
+  top: 230px;
+}
+.profile-space {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  right: -200px;
+  bottom: -55px;
+  color: #fff;
+}
+#profile-name {
+  margin-left: 10px;
 }
 </style>
