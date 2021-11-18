@@ -120,7 +120,7 @@ class MusicBall {
     }
     this.x = this.x + this.SpdX;
     this.y = this.y + this.SpdY;
-    this.radius = frequencyVolume - 90 > 0 ? (frequencyVolume - 90) * 1.5 : 0;
+    this.radius = frequencyVolume - 100 > 0 ? (frequencyVolume - 100) * 0.7 : 0;
   }
 }
       function rockMusic(drawFnc) {
@@ -132,7 +132,7 @@ class MusicBall {
             ctx.restore();
             ctx.save();
             MusicBall.create(bufferLength, myContainer, {
-                colorList: ["#F7B2B78a", "#F7717D8a", "#DE639A8a", "#7F29828a", "#16001E8a"]
+                colorList: ["#F7B2B78a", "#5FC1BF", "#DE639A8a", "#7F29828a", "#16001E8a",]
             });
             frameID ? cancelAnimationFrame(frameID) : "";
              rockMusic(MusicBall.drawBall);    
