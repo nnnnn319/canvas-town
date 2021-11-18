@@ -1,5 +1,6 @@
 <template>
-  <div class="interact">
+
+    <div class="interact">
     <div class="interact-contain">
       <div class="header">
         <div class="logo">
@@ -79,8 +80,9 @@
       </div>
     </div>
   </div>
+
 </template>
-<script>
+<script scope>
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
@@ -300,12 +302,11 @@ export default {
 /* body的8px要去掉 */
 .interact {
   display: flex;
+  position: absolute;
   justify-content: center;
   align-items: center;
-  background-color: skyblue;
-  width: 100%;
-  height: 100%;
-  position: absolute;
+  border-radius: 10px;
+background: rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 .header {

@@ -1,14 +1,17 @@
 <template>
   <div class="container">
+     
     <div id="title">{{title}}</div>
     <div class="name-space">
       <label for="" id="name-label">你的名字:</label>
       <input type="text" name="name" v-model="name" id="username" placeholder="输入你的名字" @keyup.enter="onSubmit">
       <label for="" id="name-tip">{{Tip}}</label>
     </div>
+     <RadioC></RadioC>
   </div>
 </template>
 <script>
+import RadioC from '../../plugins/Radio.vue'
 export default {
   data () {
     return {
@@ -16,6 +19,9 @@ export default {
       name: "",
       Tip: ''
     }
+  },
+  components:{
+    RadioC,
   },
   methods: {
     onSubmit () {
