@@ -12,12 +12,12 @@
         <div class="left-box">
           <div class="chat">
             <div id="chat-father" @scroll="scrollFun($event)" ref="chat-fa">
-                <ul id="chat-content">
-                    <li v-for="item in items" :key="item.message" id="chat-item">
-                        {{item.message}}
-                    </li>
-                </ul> 
-            </div> 
+              <ul id="chat-content">
+                <li v-for="item in items" :key="item.message" id="chat-item">
+                  {{item.message}}
+                </li>
+              </ul>
+            </div>
             <div class="chat-contain">
               <div class="chat-footer">
                 <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
@@ -33,6 +33,8 @@
           </div>
           <el-progress :percentage="percentage" :format="format"></el-progress>
           <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
+          <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
@@ -47,6 +49,7 @@
                       <div class="nickname">{{user.username}}</div>
                       <div class="score">{{user.score}}分</div>
                     </div>
+                    <el-tag type="success" class="readyTag" v-if="user.ready">已准备</el-tag>
                   </div>
                 </li>
                 <li v-for="(n,i) in emptyNum" :key="i+'only'">
@@ -61,18 +64,18 @@
             </el-scrollbar>
           </div>
         </div>
-        <choose-qestion class="choose-question"></choose-qestion>
+        <!-- <choose-qestion class="choose-question"></choose-qestion> -->
       </div>
     </div>
     <button @click="startChallenge()">开始挑战</button>
   </div>
 </template>
 <script>
-import ChooseQestion from '../common/ChooseQestion.vue'
+// import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
-    ChooseQestion
+    // ChooseQestion
   },
   data () {
     return {
@@ -90,57 +93,96 @@ export default {
       q_socket: '',
       input2: '',
       percentage: 10,
-      allContent:[],
-      items:[{message:'test sentence1'},{message:'test sentence2'}],
+      allContent: [],
+      items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
       users: [
         {
           id: 0,
           status: 1,
           username: 'xiaoming',
-          score: 24
+          score: 24,
+          userType: 'admin',
+          ready: false
         },
         {
           id: 1,
           status: 0,
           username: 'lily',
-          score: 20
+          score: 20,
+          userType: 'player',
+          ready: false
         },
         {
           id: 3,
           status: 0,
           username: 'hhhhh',
-          score: 30
+          score: 30,
+          userType: 'player',
+          ready: false
         }
       ],
+      userSelf: {
+        username: 'xiaoming',
+        userType: 'admin',
+        ready: false
+      },
+      // userSelf: {
+      //   username: 'lily',
+      //   userType: 'player',
+      //   ready: false
+      // },
       userNum: 6
     }
   },
   methods: {
     //   展开快捷会话的弹窗
     unfold () { //点击聊天气泡触发该函数
-        // 将输入push到数组中
-        if(this.input2!=''){
-            this.items.push({message:this.input2});
-            // console.log(document.querySelector('#chat-father'));
-            //判断是否猜测正确
-            // if(this.input2=='歌名'){
-            //     alert('猜对了！');
-            // }else{
-            //     alert('请再接再厉');
-            // }
-            //2个元素 第一个显示发送者
-            //如果猜测的内容正确，显示时会被加密
-            this.input2 = '';
-        }else{
-            alert('请输入内容后再发送');
-        }
+      // 将输入push到数组中
+      if (this.input2 != '') {
+        this.items.push({ message: this.input2 });
+        // console.log(document.querySelector('#chat-father'));
+        //判断是否猜测正确
+        // if(this.input2=='歌名'){
+        //     alert('猜对了！');
+        // }else{
+        //     alert('请再接再厉');
+        // }
+        //2个元素 第一个显示发送者
+        //如果猜测的内容正确，显示时会被加密
+        this.input2 = '';
+      } else {
+        alert('请输入内容后再发送');
+      }
     },
-    scrollFun(){//溢出时保持滚动条在底部
-        this.scrollIntoViewIfNeeded(true);
+    scrollFun () {//溢出时保持滚动条在底部
+      this.scrollIntoViewIfNeeded(true);
     },
     exit () { },
     format (percentage) {
       return `${percentage}s`;
+    },
+    readyGame (e) {
+      if (!this.userSelf.ready) {
+        console.log(e.target.innerText);
+        e.target.innerText = '取消准备'
+        // 点击后按钮变灰色，不能再点击
+        this.userSelf.ready = true
+        this.users.filter(user => {
+          if (user.username == this.userSelf.username) {
+            user.ready = true
+          }
+        })
+      } else {
+        e.target.innerText = '准备'
+        // 点击后按钮变灰色，不能再点击
+        this.userSelf.ready = false
+        this.users.filter(user => {
+          if (user.username == this.userSelf.username) {
+            user.ready = false
+          }
+        })
+      }
+
     },
     // 倒计时
     countDown () {
@@ -151,7 +193,7 @@ export default {
     },
     //socket方法
     //try 发送room房间号
-    sendRoomNum() {
+    sendRoomNum () {
       this.$socket.emit('room', this.socketId, '1')
     },
     //开始挑战方法
@@ -163,7 +205,7 @@ export default {
   created () {
 
   },
-  mounted() {
+  mounted () {
     console.log('page mounted')
     //连接成功 获取ID
     this.socketId = this.$socket.id
@@ -172,7 +214,7 @@ export default {
     this.sendRoomNum()
   },
   sockets: {
-    room_member(arr) {
+    room_member (arr) {
       console.log('room_member')
       console.log(arr)
       this.room_mem = arr
@@ -200,14 +242,14 @@ export default {
   margin: 0;
   padding: 0;
 }
-.logo{
-    font-size: 2em;
-    text-align: center;
-    background-color: #FFE652;
-    padding: 5px 20px;
-    margin: 10px 0;
-    opacity: .8;
-    border-radius: 10px;
+.logo {
+  font-size: 2em;
+  text-align: center;
+  background-color: #ffe652;
+  padding: 5px 20px;
+  margin: 10px 0;
+  opacity: 0.8;
+  border-radius: 10px;
 }
 /* body的8px要去掉 */
 .interact {
@@ -252,36 +294,36 @@ export default {
   box-sizing: border-box;
 }
 /* 显示所有的发言记录 */
-#chat-content{
-    border: solid 1px #F5F5F5;
-    font-size: 14px;
-    height: 430px;
-    width: 280px;
-    border-radius: 10px;
-    margin: 5px;
-    padding: 5px;
-    overflow:auto;
+#chat-content {
+  border: solid 1px #f5f5f5;
+  font-size: 14px;
+  height: 430px;
+  width: 280px;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 5px;
+  overflow: auto;
 }
 /* 每一条新发言 */
-#chat-item{
-    border: none;
-    border-radius: 10px;
-    height: fit-content;
-    width: fit-content;
-    margin: 5px;
-    padding: 5px;
-    background-color: #E1F5FE;
+#chat-item {
+  border: none;
+  border-radius: 10px;
+  height: fit-content;
+  width: fit-content;
+  margin: 5px;
+  padding: 5px;
+  background-color: #e1f5fe;
 }
 /* 发送按钮 */
-#sendMessage{
-    display: inline;
-    border: none;
-    border-radius: 10px;
-    background-color: #0D47A1;
-    color: white;
-    padding: 3px 10px;
-    margin-bottom: 10px;
-    margin-left: 20px;
+#sendMessage {
+  display: inline;
+  border: none;
+  border-radius: 10px;
+  background-color: #0d47a1;
+  color: white;
+  padding: 3px 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
 }
 
 .input-content {
@@ -317,7 +359,7 @@ export default {
   overflow-x: hidden;
 }
 .users {
-  width: 200px;
+  width: 230px;
   height: 500px;
   border: 1px solid #fff;
   border-radius: 10px;
@@ -380,5 +422,14 @@ li {
   position: absolute;
   top: 99px;
   left: 348px;
+}
+.readyTag {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+}
+.readybtn {
+  background-color: #e6e6e4;
 }
 </style>

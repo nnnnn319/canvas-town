@@ -1,7 +1,7 @@
 <template>
   <div class="choose-question">
     <ul class="music-name">
-      <li v-for="(music,i) in musics" :key="i+'only'" :class="{'choose-music':isChoose}" @click="chooseMusic($event)">
+      <li v-for="(music,i) in musics" :key="i+'only'" @click="chooseMusic($event)">
         {{music}}
       </li>
     </ul>
@@ -14,7 +14,7 @@ export default {
   data () {
     return {
       musics: ['美人鱼', '稻香', '破茧', '小幸运'],
-      isChoose: false
+      selectStyle: ''
     }
   },
   methods: {
