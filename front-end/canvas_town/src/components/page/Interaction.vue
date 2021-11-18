@@ -26,6 +26,8 @@
           </div>
           <el-progress :percentage="percentage" :format="format"></el-progress>
           <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
+          <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
@@ -40,6 +42,7 @@
                       <div class="nickname">{{user.username}}</div>
                       <div class="score">{{user.score}}分</div>
                     </div>
+                    <el-tag type="success" class="readyTag" v-if="user.ready">已准备</el-tag>
                   </div>
                 </li>
                 <li v-for="(n,i) in emptyNum" :key="i+'only'">
@@ -54,18 +57,18 @@
             </el-scrollbar>
           </div>
         </div>
-        <choose-qestion class="choose-question"></choose-qestion>
+        <!-- <choose-qestion class="choose-question"></choose-qestion> -->
       </div>
     </div>
 
   </div>
 </template>
 <script>
-import ChooseQestion from '../common/ChooseQestion.vue'
+// import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
-    ChooseQestion
+    // ChooseQestion
   },
   data () {
     return {
@@ -76,30 +79,70 @@ export default {
           id: 0,
           status: 1,
           username: 'xiaoming',
-          score: 24
+          score: 24,
+          userType: 'admin',
+          ready: false
         },
         {
           id: 1,
           status: 0,
           username: 'lily',
-          score: 20
+          score: 20,
+          userType: 'player',
+          ready: false
         },
         {
           id: 3,
           status: 0,
           username: 'hhhhh',
-          score: 30
+          score: 30,
+          userType: 'player',
+          ready: false
         }
       ],
+      userSelf: {
+        username: 'xiaoming',
+        userType: 'admin',
+        ready: false
+      },
+      // userSelf: {
+      //   username: 'lily',
+      //   userType: 'player',
+      //   ready: false
+      // },
       userNum: 6
     }
   },
   methods: {
     //   展开快捷会话的弹窗
     unfold () { },
+    // 退出游戏
     exit () { },
     format (percentage) {
       return `${percentage}s`;
+    },
+    readyGame (e) {
+      if (!this.userSelf.ready) {
+        console.log(e.target.innerText);
+        e.target.innerText = '取消准备'
+        // 点击后按钮变灰色，不能再点击
+        this.userSelf.ready = true
+        this.users.filter(user => {
+          if (user.username == this.userSelf.username) {
+            user.ready = true
+          }
+        })
+      } else {
+        e.target.innerText = '准备'
+        // 点击后按钮变灰色，不能再点击
+        this.userSelf.ready = false
+        this.users.filter(user => {
+          if (user.username == this.userSelf.username) {
+            user.ready = false
+          }
+        })
+      }
+
     },
     // 倒计时
     countDown () {
@@ -197,7 +240,7 @@ export default {
   overflow-x: hidden;
 }
 .users {
-  width: 200px;
+  width: 230px;
   height: 500px;
   border: 1px solid #fff;
   border-radius: 10px;
@@ -260,5 +303,14 @@ li {
   position: absolute;
   top: 99px;
   left: 348px;
+}
+.readyTag {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+}
+.readybtn {
+  background-color: #e6e6e4;
 }
 </style>
