@@ -68,6 +68,9 @@
       </div>
     </div>
     <button @click="startChallenge()">开始挑战</button>
+    <button @click="sendFile()">上传文件</button>
+
+    <!--    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>-->
   </div>
 </template>
 <script>
@@ -200,6 +203,9 @@ export default {
     startChallenge() {
       this.$socket.emit('start challenge', this.socketId)
     },
+    sendFile() {
+      this.$socket.emit('get exam', this.socketId, 'file')
+    }
 
   },
   created () {
@@ -226,8 +232,20 @@ export default {
       this.status = status
     },
     member(mem) {
-      console.log('出题人socketId' + mem)
+      console.log('出题人socketId ' + mem)
       this.q_socket = mem
+    },
+    exam(file) {
+      console.log('收到题目 '+ file)
+    },
+    //有问题
+    reverse_exam(file) {
+      console.log('出题人收到 '+file)
+      this.$socket.emit('answer', this.socketId)
+    },
+    time(time) {
+      console.log(time)
+      this.percentage = time*2
     }
   },
   computed: {
