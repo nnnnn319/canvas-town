@@ -12,7 +12,7 @@
         <div class="left-box">
           <div class="chat">
             <div id="chat-father" ref="chatInnerDiv">
-              <ul id="chat-content" ref="chatUl"> 
+              <ul id="chat-content" ref="chatUl">
                 <li v-for="item in items" :key="item.message" id="chat-item">
                   {{item.message}}
                 </li>
@@ -331,9 +331,9 @@ export default {
   position: relative;
   width: 300px;
   height: 500px;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .chat-contain {
   padding: 10px;
@@ -347,7 +347,7 @@ export default {
 }
 /* 显示所有的发言记录 */
 #chat-content {
-  border: solid 1px #f5f5f5;
+  border: solid 1px rgba(255, 255, 255, 0.3);
   font-size: 14px;
   height: 430px;
   width: 280px;
@@ -419,15 +419,16 @@ export default {
   border: 1px solid #fff;
   border-radius: 10px;
   overflow: auto;
-}
-ul {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 li {
   position: relative;
   list-style: none;
-  background-color: #fff;
   height: 83px;
-  border: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+li:last-child {
+  border: none;
 }
 .microphone {
   position: absolute;
