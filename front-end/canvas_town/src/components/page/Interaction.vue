@@ -11,8 +11,8 @@
         <!-- 左侧聊天区域 -->
         <div class="left-box">
           <div class="chat">
-            <div id="chat-father" @scroll="scrollFun($event)" ref="chat-fa">
-              <ul id="chat-content">
+            <div id="chat-father" ref="chatInnerDiv">
+              <ul id="chat-content" ref="chatUl"> 
                 <li v-for="item in items" :key="item.message" id="chat-item">
                   {{item.message}}
                 </li>
