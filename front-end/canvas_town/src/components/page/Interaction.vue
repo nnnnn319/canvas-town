@@ -70,6 +70,17 @@
     <button @click="startChallenge()">开始挑战</button>
     <button @click="sendFile()">上传文件</button>
 
+    <!--上传文件-->
+    <el-upload
+            class="upload-demo"
+            multiple
+            action="#"
+            :limit="1"
+            :on-change	="handleChange"
+            :file-list="fileList">
+      <el-button size="small" type="primary">点击上传</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+    </el-upload>
     <!--    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>-->
   </div>
 </template>
@@ -94,6 +105,8 @@ export default {
       status: [],
       //出题人socketId
       q_socket: '',
+      //上传文件
+      fileList: [],
       input2: '',
       percentage: 10,
       allContent: [],
@@ -166,7 +179,7 @@ export default {
     },
     readyGame (e) {
       if (!this.userSelf.ready) {
-        console.log(e.target.innerText);
+        // console.log(e.target.innerText);
         e.target.innerText = '取消准备'
         // 点击后按钮变灰色，不能再点击
         this.userSelf.ready = true
@@ -185,7 +198,7 @@ export default {
           }
         })
       }
-
+      //发送准备
     },
     // 倒计时
     countDown () {
@@ -205,6 +218,12 @@ export default {
     },
     sendFile() {
       this.$socket.emit('get exam', this.socketId, 'file')
+    },
+    //上传文件
+    handleChange(file, fileList) {
+      console.log('上传文件相关')
+      console.log(file)
+      console.log(fileList)
     }
 
   },
@@ -238,7 +257,6 @@ export default {
     exam(file) {
       console.log('收到题目 '+ file)
     },
-    //有问题
     reverse_exam(file) {
       console.log('出题人收到 '+file)
       this.$socket.emit('answer', this.socketId)
