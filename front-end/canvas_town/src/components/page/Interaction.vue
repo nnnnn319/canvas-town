@@ -125,6 +125,8 @@ export default {
     unfold () { //点击聊天气泡触发该函数
       // 将输入push到数组中
       if (this.input2 != '') {
+        //聊天框溢出事件触发 
+        this.chatUl();    
         this.items.push({ message: this.input2 });
         // console.log(document.querySelector('#chat-father'));
         //判断是否猜测正确
@@ -140,8 +142,12 @@ export default {
         alert('请输入内容后再发送');
       }
     },
-    scrollFun () {//溢出时保持滚动条在底部
-      this.scrollIntoViewIfNeeded(true);
+    chatUl(){
+        let chatUl = this.$refs.chatUl;
+        let chatInnerDiv = this.$refs.chatInnerDiv;
+        if(chatUl.scrollHeight>chatInnerDiv.clientHeight){
+            chatUl.scrollTop = 490;
+        }
     },
     exit () { },
     format (percentage) {
