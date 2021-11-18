@@ -76,7 +76,12 @@
           </div>
         </div>
         <!-- <choose-qestion class="choose-question"></choose-qestion> -->
+        <div class="profile-space">
+          <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
+          <p id="profile-name">username</p>
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -311,6 +316,7 @@ export default {
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .room {
   position: relative;
@@ -524,5 +530,17 @@ li {
   text-align: center;
   position: absolute;
   top: 230px;
+}
+.profile-space {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  right: -200px;
+  bottom: -55px;
+  color: #fff;
+}
+#profile-name {
+  margin-left: 10px;
 }
 </style>
