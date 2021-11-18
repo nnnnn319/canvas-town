@@ -111,7 +111,7 @@ export default {
       percentage: 10,
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
-      users: [
+      // users: [
       // userSelf: {
       //   username: 'lily',
       //   userType: 'player',
