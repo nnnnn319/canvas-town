@@ -64,7 +64,7 @@
         <choose-qestion class="choose-question"></choose-qestion>
       </div>
     </div>
-
+    <button @click="startChallenge()">开始挑战</button>
   </div>
 </template>
 <script>
@@ -80,6 +80,14 @@ export default {
       socketId: '',
       //房间成员
       room_mem: [],
+      // status  socketid标记每个成员状态 是否准备好
+  //     [
+  //             { status: false, id: 'epXaT08UqmPz9BxNAAAF' },
+  //             { status: true, id: 'Fl360SbysEi3l2EVAAAH' }
+  //     ]
+      status: [],
+      //出题人socketId
+      q_socket: '',
       input2: '',
       percentage: 10,
       allContent:[],
@@ -145,7 +153,11 @@ export default {
     //try 发送room房间号
     sendRoomNum() {
       this.$socket.emit('room', this.socketId, '1')
-    }
+    },
+    //开始挑战方法
+    startChallenge() {
+      this.$socket.emit('start challenge', this.socketId)
+    },
 
   },
   created () {
@@ -164,6 +176,16 @@ export default {
       console.log('room_member')
       console.log(arr)
       this.room_mem = arr
+    },
+    //人数不够 获取每个人的状态
+    status(status) {
+      console.log('get status')
+      console.log(status)
+      this.status = status
+    },
+    member(mem) {
+      console.log('出题人socketId' + mem)
+      this.q_socket = mem
     }
   },
   computed: {
