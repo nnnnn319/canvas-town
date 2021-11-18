@@ -99,36 +99,6 @@ export default {
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
       users: [
-        {
-          id: 0,
-          status: 1,
-          username: 'xiaoming',
-          score: 24,
-          userType: 'admin',
-          ready: false
-        },
-        {
-          id: 1,
-          status: 0,
-          username: 'lily',
-          score: 20,
-          userType: 'player',
-          ready: false
-        },
-        {
-          id: 3,
-          status: 0,
-          username: 'hhhhh',
-          score: 30,
-          userType: 'player',
-          ready: false
-        }
-      ],
-      userSelf: {
-        username: 'xiaoming',
-        userType: 'admin',
-        ready: false
-      },
       // userSelf: {
       //   username: 'lily',
       //   userType: 'player',
@@ -224,6 +194,19 @@ export default {
       console.log('room_member')
       console.log(arr)
       this.room_mem = arr
+      this.users = [];
+        var obj = {
+            id:'',
+            status: 0,
+            username: 'get from db',
+            score: 0,
+            userType: 'admin',
+
+        }
+        for(let i=0;i<this.room_mem.length;i++){
+            obj.id = this.room_mem[i].id;
+            this.users.push(obj);
+        } 
     },
     //人数不够 获取每个人的状态
     status(status) {
