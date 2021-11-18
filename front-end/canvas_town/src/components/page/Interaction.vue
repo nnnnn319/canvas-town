@@ -6,6 +6,9 @@
         <div class="logo">
           倒放挑战1号房间
         </div>
+        <div v-if="this.isQing">
+          {{this.q_socket}}正在出题
+        </div>
         <i class="el-icon-close exit" @click="exit"></i>
       </div>
       <div class="room">
@@ -13,7 +16,7 @@
         <div class="left-box">
           <div class="chat">
             <div id="chat-father" ref="chatInnerDiv">
-              <ul id="chat-content" ref="chatUl"> 
+              <ul id="chat-content" ref="chatUl">
                 <li v-for="item in items" :key="item.message" id="chat-item">
                   {{item.message}}
                 </li>
@@ -33,20 +36,60 @@
           <div class="time">
             <i class="el-icon-alarm-clock"></i>10s
           </div>
-          <div class="preparation" v-if="false">
-            <el-button type="primary" class="beginGame" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
-            <el-button type="success" class="readyGame" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>
-          </div>
-          <div class="already-play">
-            <el-button type="primary" class="began-to-challenge beginGame" @click="startChallenge()">开始挑战</el-button>
-            <!--上传文件-->
-            <el-upload class="upload-demo" multiple action="#" :limit="1" :on-change="handleChange" :file-list="fileList">
-              <el-button size="small" class="choose-file" type="primary">选择文件</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          <el-progress :percentage="percentage" :format="format"></el-progress>
+          <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
+          <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+<!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
+          <!--上传文件-->
+          <div v-show="(this.q_socket == this.socketId)">
+              <br/>
+              <br/>
+            <el-upload
+                    class="upload-demo"
+                    multiple
+                    action="#"
+                    :limit="1"
+                    :on-change	="handleChange"
+                    :file-list="fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
             </el-upload>
-            <el-button type="success" class="upload-file readyGame" @click="sendFile()">上传文件</el-button>
+            <!--录音区域-->
+            <div class="app">
+              <button class="record-btn">record</button>
+              <audio controls class="audio-player"></audio>
+            </div>
+            <div>
+              <label>请输入答案</label>
+              <el-input v-model="result" placeholder="请输入内容"></el-input>
+              <el-button @click="submit_result()">提交</el-button>
+            </div>
           </div>
-          <!--    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>-->
+          <div v-show="isAnswer">
+<!--            //控制输出-->
+            <label>请输入答案</label>
+            <el-input v-model="self_result" placeholder="请输入内容"></el-input>
+            <el-button @click="submit_self_result()">提交</el-button>
+          </div>
+          <div>
+            {{judge_result}}
+          </div>
+<!--=======-->
+<!--          <div class="preparation" v-if="false">-->
+<!--            <el-button type="primary" class="beginGame" v-if="userSelf.userType === 'admin'">开始游戏</el-button>-->
+<!--            <el-button type="success" class="readyGame" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
+<!--          </div>-->
+<!--          <div class="already-play">-->
+<!--            <el-button type="primary" class="began-to-challenge beginGame" @click="startChallenge()">开始挑战</el-button>-->
+<!--            &lt;!&ndash;上传文件&ndash;&gt;-->
+<!--            <el-upload class="upload-demo" multiple action="#" :limit="1" :on-change="handleChange" :file-list="fileList">-->
+<!--              <el-button size="small" class="choose-file" type="primary">选择文件</el-button>-->
+<!--              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+<!--            </el-upload>-->
+<!--            <el-button type="success" class="upload-file readyGame" @click="sendFile()">上传文件</el-button>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>&ndash;&gt;-->
+<!--&gt;>>>>>> dad9c82441f529471d8cd5bf5071d5b2764012e6-->
         </div>
         <!-- 右侧头像区域 -->
         <div class="right-box">
@@ -61,7 +104,10 @@
                       <div class="nickname">{{user.username}}</div>
                       <div class="score">{{user.score}}分</div>
                     </div>
-                    <el-tag type="success" class="readyTag" v-if="user.ready">已准备</el-tag>
+                    <!--不显示其他用户的这个按钮-->
+                    <button @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)">开始挑战</button>
+                    <el-tag type="success" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
+                    <el-tag type="success" class="readyTag" v-if="user.ready_status">已准备</el-tag>
                   </div>
                 </li>
                 <li v-for="(n,i) in emptyNum" :key="i+'only'">
@@ -77,6 +123,10 @@
           </div>
         </div>
         <!-- <choose-qestion class="choose-question"></choose-qestion> -->
+        <div class="profile-space">
+          <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
+          <p id="profile-name">username</p>
+        </div>
       </div>
     </div>
   </div>
@@ -92,7 +142,7 @@ export default {
   data () {
     return {
       //socketId 每次发送请求都要携带
-      socketId: '',
+      socketId: '1',
       //房间成员
       room_mem: [],
       // status  socketid标记每个成员状态 是否准备好
@@ -103,49 +153,34 @@ export default {
       status: [],
       //出题人socketId
       q_socket: '',
+      //出题人username
+      q_username: '',
       //上传文件
       fileList: [],
+      // change次数
+      change_file: 0,
+      //是否在出题中
+      isQing: false,
+      //绑定组件答案
+      result: '',
+      //不绑定
+      c_result: '',
+      //是否可以开始答题
+      isAnswer: false,
+      //自己给出的答案
+      self_result: '',
+      //判断结果
+      judge_result: '',
       input2: '',
       percentage: 10,
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
-      users: [
-        {
-          id: 0,
-          status: 1,
-          username: 'xiaoming',
-          score: 24,
-          userType: 'admin',
-          ready: false
-        },
-        {
-          id: 1,
-          status: 0,
-          username: 'lily',
-          score: 20,
-          userType: 'player',
-          ready: false
-        },
-        {
-          id: 3,
-          status: 0,
-          username: 'hhhhh',
-          score: 30,
-          userType: 'player',
-          ready: false
-        }
-      ],
+      users: [],
       userSelf: {
-        username: 'xiaoming',
-        userType: 'admin',
+        username: 'lily',
+        userType: 'player',
         ready: false
       },
-      // users: [
-      // userSelf: {
-      //   username: 'lily',
-      //   userType: 'player',
-      //   ready: false
-      // },
       userNum: 6
     }
   },
@@ -154,9 +189,13 @@ export default {
     unfold () { //点击聊天气泡触发该函数
       // 将输入push到数组中
       if (this.input2 != '') {
-        //聊天框溢出事件触发 
+        // //将消息显示
+        // this.items.push({ message: this.input2 });
+        //发送到后端
+        this.$socket.emit('chat message', this.input2, this.socketId)
+        //聊天框溢出事件触发
         this.chatUl();
-        this.items.push({ message: this.input2 });
+        // this.items.push({ message: this.input2 });
         // console.log(document.querySelector('#chat-father'));
         //判断是否猜测正确
         // if(this.input2=='歌名'){
@@ -213,6 +252,7 @@ export default {
     //开始挑战方法
     startChallenge () {
       this.$socket.emit('start challenge', this.socketId)
+
     },
     sendFile () {
       this.$socket.emit('get exam', this.socketId, 'file')
@@ -222,6 +262,189 @@ export default {
       console.log('上传文件相关')
       console.log(file)
       console.log(fileList)
+      let socket = this.$socket
+      let _this = this
+      // this.$socket.emit('audiobuffer', this.socketId, 'buffer')
+      if(this.change_file < 1) {
+        //发送文件
+        socket.emit('audiobuffer', _this.socketId, file.raw)
+      }
+      this.change_file++
+      if(this.change_file == 3) {
+        this.change_file = 0
+      }
+    },
+    audioBufferToBlob(audioBuffer) {
+      // Float32Array samples
+      const [left] =  [audioBuffer.getChannelData(0)]
+      // interleaved
+      const interleaved = new Float32Array(left.length)
+      for (let src=0, dst=0; src < left.length; src++, dst+=1) {
+        interleaved[dst] =   left[src]
+        // interleaved[dst+1] = right[src]
+      }
+      // get WAV file bytes and audio params of your audio source
+      const wavBytes = this.getWavBytes(interleaved.buffer, {
+        isFloat: true,       // floating point or 16-bit integer
+        numChannels: 1,
+        sampleRate: 48000,
+      })
+      const wav = new Blob([wavBytes], { type: "audio/mpeg; codecs=opus" })
+      return wav
+    },
+    getWavBytes(buffer, options) {
+      const type = options.isFloat ? Float32Array : Uint16Array
+      const numFrames = buffer.byteLength / type.BYTES_PER_ELEMENT
+
+      const headerBytes = this.getWavHeader(Object.assign({}, options, { numFrames }))
+      const wavBytes = new Uint8Array(headerBytes.length + buffer.byteLength);
+
+      // prepend header, then add pcmBytes
+      wavBytes.set(headerBytes, 0)
+      wavBytes.set(new Uint8Array(buffer), headerBytes.length)
+
+      return wavBytes
+    },
+// adapted from https://gist.github.com/also/900023
+// returns Uint8Array of WAV header bytes
+    getWavHeader(options) {
+      const numFrames =      options.numFrames
+      const numChannels =    options.numChannels || 2
+      const sampleRate =     options.sampleRate || 44100
+      const bytesPerSample = options.isFloat? 4 : 2
+      const format =         options.isFloat? 3 : 1
+
+      const blockAlign = numChannels * bytesPerSample
+      const byteRate = sampleRate * blockAlign
+      const dataSize = numFrames * blockAlign
+
+      const buffer = new ArrayBuffer(44)
+      const dv = new DataView(buffer)
+
+      let p = 0
+
+      function writeString(s) {
+        for (let i = 0; i < s.length; i++) {
+          dv.setUint8(p + i, s.charCodeAt(i))
+        }
+        p += s.length
+      }
+
+      function writeUint32(d) {
+        dv.setUint32(p, d, true)
+        p += 4
+      }
+
+      function writeUint16(d) {
+        dv.setUint16(p, d, true)
+        p += 2
+      }
+
+      writeString('RIFF')              // ChunkID
+      writeUint32(dataSize + 36)       // ChunkSize
+      writeString('WAVE')              // Format
+      writeString('fmt ')              // Subchunk1ID
+      writeUint32(16)                  // Subchunk1Size
+      writeUint16(format)              // AudioFormat
+      writeUint16(numChannels)         // NumChannels
+      writeUint32(sampleRate)          // SampleRate
+      writeUint32(byteRate)            // ByteRate
+      writeUint16(blockAlign)          // BlockAlign
+      writeUint16(bytesPerSample * 8)  // BitsPerSample
+      writeString('data')              // Subchunk2ID
+      writeUint32(dataSize)            // Subchunk2Size
+
+      return new Uint8Array(buffer)
+    },
+    playSound(file){
+      //需要判断type 是audiobuffer 还是 file
+      // var read = new FileReader();
+      let context = new (window.AudioContext || window.webkitAudioContext)();
+      context.decodeAudioData(file, function(buffer) {
+        console.log('transform')
+        Array.prototype.reverse.call( buffer.getChannelData(0) );
+
+        // Array.prototype.reverse.call( buffer.getChannelData(1) );
+        //扬声器直接播放
+        // 设置数据
+
+        var source = context.createBufferSource();
+        source.buffer = buffer;
+        // connect到扬声器
+        source.connect(context.destination);
+        alert('三秒后将播放题目')
+        let timer = setTimeout(()=> {
+          source.start();
+        }, 3000)
+        //添加空间播放
+        console.log(timer)
+      })
+    },
+    //上传答案
+    submit_result() {
+      this.$socket.emit('result', this.socketId, this.result)
+      this.result = ''
+    },
+    //回答-自己的答案
+    submit_self_result() {
+      if(this.self_result === this.c_result) {
+        console.log('回答正确')
+        this.self_result = ''
+        this.judge_result = '回答正确'
+        for(let i in this.users) {
+          if(this.users[i].id === this.socketId) {
+            this.users[i].score = parseInt(this.users[i].score) + 5
+          }
+        }
+      } else {
+        this.judge_result = '回答错误'
+      }
+      this.isAnswer = false
+    },
+    //录制音频
+    record() {
+      const recordBtn = document.querySelector(".record-btn");
+      const player = document.querySelector(".audio-player");
+      if (navigator.mediaDevices.getUserMedia) {
+        let chunks = [];
+        const constraints = { audio: true };
+        navigator.mediaDevices.getUserMedia(constraints).then(
+                stream => {
+                  console.log("授权成功！");
+                  const mediaRecorder = new MediaRecorder(stream);
+                  recordBtn.onclick = () => {
+                    if (mediaRecorder.state === "recording") {
+                      mediaRecorder.stop();
+                      recordBtn.textContent = "record";
+                      console.log("录音结束");
+                    }
+                    else {
+                      mediaRecorder.start();
+                      console.log("录音中...");
+                      recordBtn.textContent = "stop";
+                    }
+                    console.log("录音器状态：", mediaRecorder.state);
+                  };
+                  mediaRecorder.ondataavailable = e => {
+                    chunks.push(e.data);
+                  };
+                  // eslint-disable-next-line no-unused-vars
+                  mediaRecorder.onstop = (e) => {
+                    var blob = new Blob(chunks, { type: "audio/mpeg; codecs=opus" });
+                    this.$socket.emit('audiobuffer', this.socketId, blob)
+                    chunks = [];
+                    var audioURL = window.URL.createObjectURL(blob);
+                    player.src = audioURL;
+                  };
+                },
+                () => {
+                  console.error("授权失败！");
+                }
+        );
+      }
+      else {
+        console.error("浏览器不支持 getUserMedia");
+      }
     }
 
   },
@@ -234,6 +457,9 @@ export default {
     console.log(this.socketId)
     //获取房间成员函数
     this.sendRoomNum()
+    //录制音频函数
+    this.record()
+
   },
   sockets: {
     room_member (arr) {
@@ -241,28 +467,53 @@ export default {
       console.log(arr)
       this.room_mem = arr
       this.users = [];
-      var obj = {
-        id: '',
-        status: 0,
-        username: 'get from db',
-        score: 0,
-        userType: 'admin',
-
-      }
-      for (let i = 0; i < this.room_mem.length; i++) {
-        obj.id = this.room_mem[i].id;
-        this.users.push(obj);
+      for(let i=0;i<this.room_mem.length;i++){
+          let obj = {
+            id:'',
+            status: 0,
+            username: 'get from db',
+            score: 0,
+            userType: 'admin',
+            ready_status: false,
+            isThis: false
+          }
+            obj.id = this.room_mem[i];
+            if(this.room_mem[i] == this.socketId) {
+              obj.isThis = true
+            } else {
+              obj.isThis = false
+            }
+            this.users.push(obj);
       }
     },
-    //人数不够 获取每个人的状态
-    status (status) {
+    // 获取每个人的状态
+    status(status) {
       console.log('get status')
       console.log(status)
       this.status = status
+      console.log(this.users)
+      console.log(status)
+      for(let i in status) {
+        for(let j in this.users) {
+          if(this.users[j].id == status[i].id) {
+            this.users[j].ready_status = status[i].status
+          }
+        }
+      }
     },
     member (mem) {
       console.log('出题人socketId ' + mem)
+      //修改变量正在出题
+      this.isQing = true
       this.q_socket = mem
+      //获取username
+      for(let i in this.users) {
+        if(this.users[i].id === mem) {
+          this.q_username = this.users[i].username
+        }
+      }
+      //初始化一些变量
+      this.judge_result = ''
     },
     exam (file) {
       console.log('收到题目 ' + file)
@@ -273,8 +524,32 @@ export default {
     },
     time (time) {
       console.log(time)
-      this.percentage = time * 2
+      this.percentage = time*2
+      if(time === 1) {
+        this.isQing = false
+      }
+    },
+    chat_message(msg) {
+      console.log("收到聊天信息 " + msg)
+      //将消息显示
+      this.items.push({ message: msg });
+    },
+    play(buffer) {
+      //收到音频 可以开始答题
+      console.log('收到buffer')
+      this.playSound(buffer)
+      //判断是否为出题方
+      if(this.socketId != this.q_socket) {
+        this.isAnswer = true
+      } else {
+        this.isAnswer = false
+      }
+    },
+    final_result(re) {
+      console.log('收到答案')
+      this.c_result = re
     }
+
   },
   computed: {
     emptyNum: function () {
@@ -312,6 +587,7 @@ background: rgba(0, 0, 0, 0.1);
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .room {
   position: relative;
@@ -326,9 +602,9 @@ background: rgba(0, 0, 0, 0.1);
   position: relative;
   width: 300px;
   height: 500px;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .chat-contain {
   padding: 10px;
@@ -342,7 +618,7 @@ background: rgba(0, 0, 0, 0.1);
 }
 /* 显示所有的发言记录 */
 #chat-content {
-  border: solid 1px #f5f5f5;
+  border: solid 1px rgba(255, 255, 255, 0.3);
   font-size: 14px;
   height: 430px;
   width: 280px;
@@ -414,15 +690,16 @@ background: rgba(0, 0, 0, 0.1);
   border: 1px solid #fff;
   border-radius: 10px;
   overflow: auto;
-}
-ul {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 li {
   position: relative;
   list-style: none;
-  background-color: #fff;
   height: 83px;
-  border: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+li:last-child {
+  border: none;
 }
 .microphone {
   position: absolute;
@@ -525,5 +802,17 @@ li {
   text-align: center;
   position: absolute;
   top: 230px;
+}
+.profile-space {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  right: -200px;
+  bottom: -55px;
+  color: #fff;
+}
+#profile-name {
+  margin-left: 10px;
 }
 </style>
