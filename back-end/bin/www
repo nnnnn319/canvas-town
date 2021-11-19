@@ -122,6 +122,8 @@ let socketPreAlready = []
 let socketExam = new Map()
 // room中的所有socketId
 let socketInRoom = new Map()
+//username in roome
+let userInRoom = new Map()
 // 出题人socketID
 let examSocketId = undefined
 
@@ -160,10 +162,13 @@ io.on('connection', (socket) => {
         console.log("id 重复")
       } else {
         socketInRoom.get(num).push(id)
+        userInRoom.get(num).push(name)
       }
     } else {
       socketInRoom.set(num, [])
       socketInRoom.get(num).push(id)
+      userInRoom.set(num, [])
+      userInRoom.get(num).push(name)
     }
     console.log(num+" 房间人员:")
     console.log(socketInRoom)
@@ -171,15 +176,16 @@ io.on('connection', (socket) => {
   })
   socket.on('get room', (id) => {
     let room = socketRoom.get(id)
-    io.to(room).emit('room_member', socketInRoom.get(room))
+    io.to(room).emit('room_member', socketInRoom.get(room), userInRoom.get(room))
   })
   //发送消息 相当于聊天功能
   socket.on('chat message', (msg, id) => {
     console.log('message: ' + msg + " " + id);
     //广播
     let room = socketRoom.get(id)
+    let username = userInRoom.get(room)[socketInRoom.get(room).indexOf(id)]
     console.log(room)
-    io.to(room).emit('chat_message', msg);
+    io.to(room).emit('chat_message', username+": "+msg);
   });
   //开始挑战 首先先是一个人挑战 之后再实现循环
   // start challenge 每一个客户端都要发起 当收到所有客户端的挑战时才会开始
