@@ -38,5 +38,11 @@ export default new VueRouter({
                 import ('../components/page/Visual.vue'),
             meta: { title: 'interaction父组件'},
         },
+        {
+            path: '/guessMusic',
+            name: 'guessMusic',
+            component: () =>  import ( /* webpackChunkName: "guessMusic" */ '../components/page/GuessMusic.vue'),
+            meta: { title: 'guessMusic'},
+        }
     ]
 })

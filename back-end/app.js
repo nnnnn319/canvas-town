@@ -19,6 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// 添加音乐文件夹为公共文件夹
+app.use(express.static(path.join(__dirname, 'public/music')));
 
 app.use(cors({
   origin:['http://localhost:8080'],

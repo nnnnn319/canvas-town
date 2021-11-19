@@ -4,8 +4,10 @@
         <p id="music-index"  v-show="!showBegin">当前第{{music_index + 1}}题</p>
         <p id="music-index"  v-show="!showBegin">倒计时{{nowtime}}秒</p>
         <div class="total-show" v-show="!showBegin">当前分数：{{now_total}}分</div>
-        <div class="music-container">音乐展示区域</div>
-        <div class="audio-container">播放器位置</div>
+        <div class="music-container"><canvas ref="canvas" id="canvas" style="width:100%;"></canvas></div>
+        <div class="audio-container">
+            <audio  autoplay controls :src="music_now.addr" id="myaudio" class="audio-player"></audio>
+        </div>
         <div class="option-container">
             
             <b-button id="gameStart" variant="outline-primary" v-show="showBegin" @click="gameStart">开始游戏</b-button>
@@ -23,22 +25,22 @@ export default {
             musicList:[
                 {
                     name: '青花瓷',     // 正确答案    
-                    addr:'青花瓷.mp4',  // 音频地址
+                    addr:'青花瓷.mp3',  // 音频地址
                     total: 20           // 分数
                 },
                 {
                     name: '红昭愿',     // 正确答案    
-                    addr:'红昭愿.mp4',  // 音频地址
+                    addr:'红昭愿.mp3',  // 音频地址
                     total: 10           // 分数
                 },
                 {
                     name: '等你下课',     // 正确答案    
-                    addr:'等你下课.mp4',  // 音频地址
+                    addr:'等你下课.mp3',  // 音频地址
                     total: 10           // 分数
                 },
                 {
                     name: '稻香',     // 正确答案    
-                    addr:'稻香.mp4',  // 音频地址
+                    addr:'稻香.mp3',  // 音频地址
                     total: 10           // 分数
                 }
             ],
@@ -75,7 +77,7 @@ export default {
             // 当前倒计时
             nowtime: 30,
             // 目标倒计时
-            time: 0,
+            time: 0
         }
     },
     mounted(){
@@ -116,7 +118,7 @@ export default {
             // 设置倒计时
             this.time = 0
             // 设置当前事件
-            this.nowtime = 10
+            this.nowtime = 30
             // 设置当前还未答题
             this.ifAnswer = false
             // 当前有歌
@@ -131,6 +133,9 @@ export default {
                 this.intervalId = setInterval(this.judgeContinue,1000)
                 // 展示标签
                 this.showBegin = false
+                // 设置音频跳动
+                this.loadMusicView()
+                
             }else{
                 alert('获取题目失败!')
                 this.$router.push({
@@ -155,8 +160,10 @@ export default {
                     // 刷新答案
                     this.resetAnswer(this.music_index)
                     // 设计倒计时
-                    this.nowtime = 10
+                    this.nowtime = 30
                     this.ifAnswer = false
+                    // 设置音频跳动
+                    this.loadMusicView()
                 }else{
                     this.gameOver()
                 }
@@ -193,6 +200,108 @@ export default {
             // 重置答案
             this.answer_list = newAnswer;
         },
+        // 载入音量可视化
+        loadMusicView(){
+            // 获取音频
+            var oAudio
+            var dataArray
+            var oCtx
+            var analyser
+            var audioSrc
+            var bufferLength 
+            var frameID
+            // 利用cancas渐变进行音频绘制
+            var canvas =document.getElementById('canvas')
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.save();
+            let  myContainer = []; //存储 需保持的图形(会动的)
+            initAudio();
+        function initAudio() {
+            console.log(document)
+            oAudio = document.getElementById('myaudio')
+            oAudio.crossOrigin = "anonymous";
+            oAudio.play();
+        // 创建音频上下文对象
+            oCtx = new AudioContext();
+                // 创建分析机 
+            analyser = oCtx.createAnalyser();
+            // 创建媒体源
+            audioSrc = oCtx.createMediaElementSource(oAudio);
+            // 媒体源与分析机连接
+            audioSrc.connect(analyser);
+            // 输出的目标：将分析机分析出来的处理结果与目标点（耳机/扬声器）连接
+            analyser.connect(oCtx.destination);
+            // 设置傅里叶变化参数
+            analyser.fftSize =128;
+            //根据范围得到不同音频的数量的长度
+            bufferLength = analyser.frequencyBinCount;
+            dataArray= new Uint8Array(bufferLength);
+            }
+            class MusicBall {
+                constructor(x, y, speedX, speedY, radius, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.SpdX = speedX;
+                    this.SpdY = speedY;
+                    this.radius = radius;
+                    this.color = color;
+                }
+            static create(bufferLength, container, detail) {
+                for (let i = 0; i < bufferLength; i++) {
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let speedX = (Math.random() - 0.5) * 1;
+                let speedY = (Math.random() - 0.5) * 1;
+                let color =
+                    detail.colorList[Math.floor(Math.random() * detail.colorList.length)];
+                let radius = 0;
+                container.push(new MusicBall(x, y, speedX, speedY, radius, color));
+                }
+            }
+
+            static drawBall() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                myContainer.forEach((ball, index) => ball.update(dataArray[index]));
+            }
+            draw() {
+                ctx.beginPath(); //开始绘制
+
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            }
+            update(frequencyVolume) {
+                this.draw();
+                if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+                this.SpdX = -this.SpdX;
+                this.x = this.x + this.SpdX;
+                }
+                if (this.y + this.radius > canvas.heyight || this.y - this.radius < 0) {
+                this.SpdY = -this.SpdY;
+                this.y = this.y + this.SpdY;
+                }
+                this.x = this.x + this.SpdX;
+                this.y = this.y + this.SpdY;
+                this.radius = frequencyVolume - 100 > 0 ? (frequencyVolume - 100) * 0.7 : 0;
+            }
+            }
+            function rockMusic(drawFnc) 
+            {
+                // requestAnimationFrame 保证与屏幕刷新率一致,在每次执行时绘制canvas数据
+                frameID = requestAnimationFrame(rockMusic.bind(this, drawFnc));
+                analyser.getByteFrequencyData(dataArray);
+                drawFnc();
+            }
+                ctx.restore();
+                ctx.save();
+                MusicBall.create(bufferLength, myContainer, {
+                    colorList: ["#F7B2B78a", "#5FC1BF", "#DE639A8a", "#7F29828a", "#16001E8a",]
+                });
+                frameID ? cancelAnimationFrame(frameID) : "";
+                rockMusic(MusicBall.drawBall);    
+        }
     },
     
 }
@@ -205,6 +314,7 @@ export default {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    background-color: #CBF1F5;
 }
 
 .total-show{
@@ -216,13 +326,18 @@ export default {
     width: 100%;
     height: 500px;
     margin: 0 20% 0 20%;
-    background-color: gray;
+    background-color: #A6E3E9;
 }
 
 .audio-container{
     width: 100%;
     margin: 0 20% 0 20%;
     text-align: center;
+}
+
+.audio-player{
+    margin-top: 20px;
+    width: 50%;
 }
 
 .option-container{

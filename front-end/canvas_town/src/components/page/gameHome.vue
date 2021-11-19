@@ -18,9 +18,6 @@
         <b-form-group id="select-group-1" label="游戏模式:" label-for="select-1" description="选择游戏模式">
           <b-form-select id="select-1" v-model="form.gameType" :options="gameTypes" style="width:80%;" class="mt-3"></b-form-select>
         </b-form-group>
-        <b-form-group id="select-group-2" label="游戏人数" label-for="select-2" description="选择游戏人数">
-          <b-form-select id="select-1" v-model="form.playerNumber" :options="gamePlay" style="width:80%;"></b-form-select>
-        </b-form-group>
       </form>
     </b-modal>
     <b-modal id="add-room" ref="create-room-modal" title="Add Room" @show="resetModal" @hidden="resetModal" @ok="addRoom">
@@ -47,10 +44,6 @@ export default {
       {
         value: '倒放挑战',
         text: '倒放挑战'
-      },
-      {
-        value: '冲关挑战',
-        text: '冲关挑战'
       }],
       gamePlay: [2, 3, 4, 5, 6],
       roomNumber: ""
@@ -58,8 +51,15 @@ export default {
   },
   methods: {
     createRoom: function () {
-      console.log("你创建了房间")
-      console.log("房间信息", this.form)
+      if(this.form.gameType === '猜歌挑战'){
+        this.$router.push({
+          path:'/guessMusic'
+        })
+      }else if(this.form.gameType === '倒放挑战'){
+        this.$router.push({
+          path: '/interaction'
+        })
+      }
     },
     addRoom: function () {
       console.log("你加入了房间")

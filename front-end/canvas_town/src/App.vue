@@ -22,5 +22,11 @@ export default {
   /* text-align: center; */
   color: #2c3e50;
   /* margin-top: 60px; */
+  width: 100%;
+  height: 100%;
 }
+
+html,body{
+              width: 100%;
+              height: 100%;         }
 </style>
