@@ -13,11 +13,13 @@
       </div>
     </div>
     <div class="qier-img">
-        <img height="350px;" src="../../assets/img/企鹅.png" alt="">
-        <div class="profile-space">
-      <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
-      <p id="profile-name">{{username}}</p>
-      <button @click="logout">退出登录</button>
+      <div id="qier-img">
+        <img height="300px;" src="../../assets/img/企鹅.png" alt="">
+      </div>
+      <div class="profile-space">
+        <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
+        <p id="profile-name">{{username}}</p>
+        <button @click="logout">退出登录</button>
     </div>
     </div>
     <b-modal id="create-room" ref="create-room-modal" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
@@ -72,7 +74,7 @@ export default {
       console.log("你加入了房间")
       console.log("房间信息", this.roomNumber)
       //加入房间  发送socketio请求
-      this.$socket.emit('room', this.$socket.id, this.roomNumber)
+      this.$socket.emit('room', this.$socket.id, this.roomNumber, localStorage.getItem("name"))
       this.$router.push({
         path: '/interaction'
       })
@@ -120,7 +122,13 @@ export default {
 }
 
 .qier-img{
-  width: 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#qier-img{
+  margin-left: 300px;
 }
 .button-group {
   width: 100%;
