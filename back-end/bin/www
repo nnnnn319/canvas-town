@@ -366,7 +366,15 @@ function start(room_num, index) {
   if(index > socketInRoom.get(room_num).length) {
     console.log('全部出题结束')
     //初始化一些内容
+    //离开房间 room_num
+//room->准备好的数字
+    socketPre.set(room_num, 1)
+    socketPreAlready = []
+    socketInRoom.set(room_num, [])
+    userInRoom.set(room_num, [])
     socketExam.set(room_num, 1)
+    io.to(room_num).emit('end', 'end')
+
     return;
   }
   // 首先发送开始信号 按顺序设置出题人

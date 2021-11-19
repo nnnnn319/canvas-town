@@ -192,7 +192,7 @@ export default {
       input2: '',
       percentage: 0,
       allContent: [],
-      items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
+      items: [{ message: '快来和房间中的小伙伴们交流吧' }],
       users: [],
       userSelf: {
         username: 'lily',
@@ -573,7 +573,12 @@ export default {
     chat_message(msg) {
       console.log("收到聊天信息 " + msg)
       //将消息显示
-      this.items.push({ message: msg });
+      if(msg.contains(this.c_result)) {
+        this.items.push({ message: '**********' });
+        alert('您的内容包含了正确答案')
+      } else{
+        this.items.push({ message: msg });
+      }
     },
     play(buffer) {
       //收到音频 可以开始答题
@@ -589,6 +594,16 @@ export default {
     final_result(re) {
       console.log('收到答案')
       this.c_result = re
+    },
+    end(msg) {
+      console.log(msg)
+      alert('挑战结束,即将返回首页')
+      setTimeout( ()=> {
+        this.$router.push({
+          path: '/home'
+        })
+      }, 3000)
+
     }
 
   },
@@ -670,6 +685,7 @@ export default {
 }
 .room {
   /* background-color: #0DF2DE; */
+  background-color: white;
 }
 .room-left {
   flex: 1;
@@ -681,6 +697,7 @@ export default {
 }
 .chat-contain {
   padding: 10px;
+  /*border: 1px solid;*/
 }
 .chat-footer {
   position: absolute;
@@ -709,7 +726,7 @@ export default {
   margin: 5px;
   padding: 5px;
   /*background-color: #e1f5fe;*/
-  color: white;
+  color: black;
 }
 /* 发送按钮 */
 /*#sendMessage {*/

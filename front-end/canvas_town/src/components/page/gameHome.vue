@@ -1,15 +1,23 @@
 <template>
   <div class="game-hoom-container">
+    <div>
+      <b-modal  title="Add Room"  v-model="openAdd"  @show="resetModal" @ok="addRoom">
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
+            <b-input id="input-1" v-model="roomNumber"></b-input>
+          </b-form-group>
+        </form>
+      </b-modal>
+    </div>
     <div class="title-img">
-      
       <img id="title-img" src="../../assets/img/字体.png" alt="">
     </div>
     <div class="button-group">
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button"  @click="openCreate = !openCreate" >创建房间</b-button>
+        <b-button variant="outline-primary" class="room-button"  @click="guessMusic" >冲关挑战</b-button>
       </div>
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" @click="openAdd = !openAdd">加入房间</b-button>
+        <b-button variant="outline-primary" class="room-button" @click="openAdd = !openAdd">倒放挑战</b-button>
       </div>
     </div>
     <div class="qier-img">
@@ -22,20 +30,6 @@
         <button @click="logout">退出登录</button>
     </div>
     </div>
-    <b-modal id="create-room" ref="create-room-modal" v-model="openCreate" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group id="select-group-1" label="游戏模式:" label-for="select-1" description="选择游戏模式">
-          <b-form-select id="select-1" v-model="form.gameType" :options="gameTypes" style="width:80%;" class="mt-3"></b-form-select>
-        </b-form-group>
-      </form>
-    </b-modal>
-    <b-modal id="add-room" ref="add-room-modal" title="Add Room"  v-model="openAdd"  @show="resetModal" @hidden="resetModal" @ok="addRoom">
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
-          <b-input id="input-1" v-model="roomNumber"></b-input>
-        </b-form-group>
-      </form>
-    </b-modal>
   </div>
 </template>
 <script>
@@ -56,21 +50,16 @@ export default {
       }],
       gamePlay: [2, 3, 4, 5, 6],
       roomNumber: "",
-      openAdd: false,
-      openCreate: false,
+      openAdd: false
     }
   },
+  mounted(){
+  },
   methods: {
-    createRoom: function () {
-      if(this.form.gameType === '猜歌挑战'){
-        this.$router.push({
-          path:'/guessMusic'
-        })
-      }else if(this.form.gameType === '倒放挑战'){
-        this.$router.push({
-          path: '/interaction'
-        })
-      }
+    guessMusic: function () {
+      this.$router.push({
+        path:'/guessMusic'
+      })
     },
     addRoom: function () {
       console.log("你加入了房间")
@@ -132,17 +121,17 @@ export default {
 .title-img{
   display: flex;
   justify-content: center;
+  height: 40%;
 }
 
 #title-img{
-  width: 40%;
-  height: 400px;
 }
 
 .qier-img{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  height: 30%;
 }
 
 #qier-img{
@@ -150,7 +139,7 @@ export default {
 }
 .button-group {
   width: 100%;
-  height: 100%;
+  height: 30%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -183,6 +172,7 @@ export default {
 }
 
 .game-hoom-container{
-  overflow:auto;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

@@ -31,6 +31,7 @@ export default new VueRouter({
             // 设置相应元信息
             meta: { title: 'gameHome组件' },
         },
+<<<<<<< HEAD
         {
             path: '/Visual',
             name: 'Visual',
@@ -38,6 +39,15 @@ export default new VueRouter({
                 import ('../components/page/Visual.vue'),
             meta: { title: '可视化组件' },
         },
+=======
+        // {
+        //     path: '/Visual',
+        //     name: 'Visual',
+        //     component: () =>
+        //         import ('../components/page/Visual.vue'),
+        //     meta: { title: 'interaction父组件' },
+        // },
+>>>>>>> 2c92176c58965dbf9201a66fe830934eb77c89e9
         {
             path: '/guessMusic',
             name: 'guessMusic',
