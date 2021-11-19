@@ -70,6 +70,7 @@ export default {
 <style scoped>
 /** 全局为flex布局 */
 .home-container {
+  margin-top: 10%;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -158,6 +159,8 @@ button:focus {
 .bounce {
    text-align: center;
   font-size: 200px;
+   position: relative;
+   top: 100px;
   display: flex;
   align-items: center;
   justify-content: center;

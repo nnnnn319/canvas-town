@@ -6,10 +6,10 @@
     </div>
     <div class="button-group">
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" v-b-modal.create-room>创建房间</b-button>
+        <b-button variant="outline-primary" class="room-button"  @click="openCreate = !openCreate" >创建房间</b-button>
       </div>
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" v-b-modal.add-room>加入房间</b-button>
+        <b-button variant="outline-primary" class="room-button" @click="openAdd = !openAdd">加入房间</b-button>
       </div>
     </div>
     <div class="qier-img">
@@ -22,14 +22,14 @@
         <button @click="logout">退出登录</button>
     </div>
     </div>
-    <b-modal id="create-room" ref="create-room-modal" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
+    <b-modal id="create-room" ref="create-room-modal" v-model="openCreate" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group id="select-group-1" label="游戏模式:" label-for="select-1" description="选择游戏模式">
           <b-form-select id="select-1" v-model="form.gameType" :options="gameTypes" style="width:80%;" class="mt-3"></b-form-select>
         </b-form-group>
       </form>
     </b-modal>
-    <b-modal id="add-room" ref="create-room-modal" title="Add Room" @show="resetModal" @hidden="resetModal" @ok="addRoom">
+    <b-modal id="add-room" ref="add-room-modal" title="Add Room"  v-model="openAdd"  @show="resetModal" @hidden="resetModal" @ok="addRoom">
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
           <b-input id="input-1" v-model="roomNumber"></b-input>
@@ -55,7 +55,9 @@ export default {
         text: '倒放挑战'
       }],
       gamePlay: [2, 3, 4, 5, 6],
-      roomNumber: ""
+      roomNumber: "",
+      openAdd: false,
+      openCreate: false,
     }
   },
   methods: {
@@ -74,8 +76,15 @@ export default {
       console.log("你加入了房间")
       console.log("房间信息", this.roomNumber)
       //加入房间  发送socketio请求
-      this.$socket.emit('room', this.$socket.id, this.roomNumber, localStorage.getItem("name"))
-
+      if(this.roomNumber === ""){
+        this.$message.error(`请输入房间号`)
+      }
+      else{
+        this.$socket.emit('room', this.$socket.id, this.roomNumber, localStorage.getItem("name"))
+        this.$router.push({
+        path: '/interaction'
+      })
+      }
     },
     resetModal: function () {
       this.form = {
@@ -171,5 +180,9 @@ export default {
 #profile-name {
   font-size: 50px;
   padding: 20px;
+}
+
+.game-hoom-container{
+  overflow:auto;
 }
 </style>
