@@ -6,10 +6,10 @@
     </div>
     <div class="button-group">
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" v-b-modal.create-room>创建房间</b-button>
+        <b-button variant="outline-primary" class="room-button" @click="openCreateRoom">创建房间</b-button>
       </div>
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" v-b-modal.add-room>加入房间</b-button>
+        <b-button variant="outline-primary" class="room-button" @click="openAddRoom">加入房间</b-button>
       </div>
     </div>
     <div class="qier-img">
@@ -29,7 +29,7 @@
         </b-form-group>
       </form>
     </b-modal>
-    <b-modal id="add-room" ref="create-room-modal" title="Add Room" @show="resetModal" @hidden="resetModal" @ok="addRoom">
+    <b-modal id="add-room" ref="add-room-modal" title="Add Room" @show="resetModal" @hidden="resetModal" @ok="addRoom">
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
           <b-input id="input-1" v-model="roomNumber"></b-input>
@@ -59,6 +59,12 @@ export default {
     }
   },
   methods: {
+    openCreateRoom(){
+      this.$refs['create-room-modal'].show()
+    },
+    openAddRoom(){
+      this.$refs['add-room-modal'].show()
+    },
     createRoom: function () {
       if(this.form.gameType === '猜歌挑战'){
         this.$router.push({
@@ -162,5 +168,9 @@ export default {
 #profile-name {
   font-size: 50px;
   padding: 20px;
+}
+
+.game-hoom-container{
+  overflow:auto;
 }
 </style>

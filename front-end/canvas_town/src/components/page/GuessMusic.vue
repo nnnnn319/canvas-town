@@ -6,7 +6,7 @@
         <div class="total-show" v-show="!showBegin">当前分数：{{now_total}}分</div>
         <div class="music-container"><canvas ref="canvas" id="canvas" style="width:100%; height:100%;"></canvas></div>
         <div class="audio-container">
-            <audio  autoplay controls :src="music_now.addr" id="myaudio" class="audio-player"></audio>
+            <audio  autoplay controls :src="'/' + music_now.addr" id="myaudio" class="audio-player"></audio>
         </div>
         <div class="option-container">
             
