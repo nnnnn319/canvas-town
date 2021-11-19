@@ -158,7 +158,6 @@ button:focus {
 .bounce {
    text-align: center;
   font-size: 200px;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,7 +172,7 @@ button:focus {
   animation: bounce 0.75s cubic-bezier(0.05, 0, 0.2, 1) infinite alternate;
   display: inline-block;
   transform: translate3d(0, 0, 0);
-  margin-top: 0.5em;
+  margin-top: 0.3em;
   text-shadow: rgba(255, 255, 255, 0.4) 0 0 0.05em;
   font: normal 500 10rem 'Varela Round', sans-serif;
 }
