@@ -2,12 +2,12 @@
     <div class="guess-music-container">
         <!-- 冲关挑战！-->
         <p id="music-index"  v-show="!showBegin">当前第{{music_index + 1}}题</p>
-        <p id="music-index"  v-show="!showBegin">倒计时{{nowtime}}秒</p>
-        <div class="total-show" v-show="!showBegin">当前分数：{{now_total}}分</div>
-        <div class="music-container"><canvas ref="canvas" id="canvas" style="width:100%; height:100%;"></canvas></div>
-        <div class="audio-container">
-            <audio  autoplay controls :src="music_now.addr" id="myaudio" class="audio-player"></audio>
+        <div id="music-total"  v-show="!showBegin">倒计时<span id="time">{{nowtime}}</span>秒  当前分数：<span id="total">{{now_total}}</span>分</div>
+        <div class="music-container" v-show="!showBegin"><canvas ref="canvas" id="canvas" style="width:100%; height:100%;"></canvas></div>
+        <div class="audio-container" v-show="!showBegin" >
+            <audio v-show="!showBegin" autoplay  controls :src="'/' + music_now.addr" id="myaudio" class="audio-player"></audio>
         </div>
+        <div class="guess-title" v-if="showBegin" >猜歌挑战</div>
         <div class="option-container">
             
             <b-button id="gameStart" variant="outline-primary" v-show="showBegin" @click="gameStart">开始游戏</b-button>
@@ -336,7 +336,6 @@ export default {
 }
 
 .audio-player{
-    margin-top: 20px;
     width: 50%;
 }
 
@@ -355,13 +354,31 @@ export default {
 #gameStart{
     width: 50%;
     height: 50px;
-    margin-top: 100px;
     border-radius: 20px;
 }
-
 #music-index{
     width: 100%;
     text-align: center;
     font-size: 25px;
+}
+
+#music-total{
+    text-align: end;
+}
+
+#time{
+    color: hotpink;
+    font-size: 30px;
+}
+
+#total{
+    color: green;
+    font-size: 30px;
+}
+.guess-title{
+    font-family: "KaiTi_GB2312";
+    font-size: 100px;
+    width: 100%;
+    text-align: center;
 }
 </style>

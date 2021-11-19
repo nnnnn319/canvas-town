@@ -6,7 +6,7 @@
             倒放挑战1号房间
           </div>
           <div v-if="this.isQing">
-            {{this.q_socket}}正在出题
+            {{this.q_username}}正在出题
           </div>
           <i class="el-icon-close exit" @click="exit"></i>
         </div>
@@ -15,10 +15,10 @@
           <div class="room-left">
          
             <div class="left-box">
-              <div class="time">
-                <i class="el-icon-alarm-clock"></i>10s
+              <div class="time" >
+                <i class="el-icon-alarm-clock"></i>{{percentage}}s
               </div>
-              <el-progress :percentage="percentage" :format="format"></el-progress>
+<!--              <el-progress :percentage="percentage" :format="format"></el-progress>-->
               <!--              <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>-->
               <div class="chat">
                 <div id="chat-father" ref="chatInnerDiv">
@@ -30,9 +30,9 @@
                 </div>
                 <div class="chat-contain">
                   <div class="chat-footer">
-                    <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
+                    <el-input class="input-content" placeholder="按下回车键发送" @keyup.enter.native="unfold"  v-model="input2">
                     </el-input>
-                    <button @click="unfold" id="sendMessage">发送</button>
+<!--                    <b-button variant="outline-primary" @click="unfold" id="sendMessage"> 发送 </b-button>-->
                   </div>
                 </div>
               </div>
@@ -56,7 +56,7 @@
           <div class="right-box">
             <div class="users">
               <el-scrollbar>
-                <ul>
+                <ul class="ul-l">
                   <li v-for="user in users" :key="user.id">
                     <div class="user">
                       <i class="el-icon-microphone" v-if="user.status" :class="{microphone:user.status}"></i>
@@ -66,8 +66,8 @@
                         <div class="score">{{user.score}}分</div>
                       </div>
                       <!--不显示其他用户的这个按钮-->
-                      <button @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)">开始挑战</button>
-                      <el-tag type="success" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
+                      <b-button variant="outline-primary" @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)" class="readyTag">开始挑战</b-button>
+                      <el-tag type="error" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
                       <el-tag type="success" class="readyTag" v-if="user.ready_status">已准备</el-tag>
                     </div>
                   </li>
@@ -170,7 +170,7 @@ export default {
       //判断结果
       judge_result: '',
       input2: '',
-      percentage: 10,
+      percentage: 0,
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
       users: [],
@@ -463,11 +463,14 @@ export default {
 
   },
   sockets: {
-    room_member (arr) {
+    room_member (arr, user_arr) {
       console.log('room_member')
-      console.log(arr)
-      this.room_mem = arr
+      console.log(arr[0])
+      console.log(arr[1])
+      console.log(user_arr)
+      this.room_mem = arr[0]
       this.users = [];
+
       for(let i=0;i<this.room_mem.length;i++){
           let obj = {
             id:'',
@@ -479,6 +482,7 @@ export default {
             isThis: false
           }
             obj.id = this.room_mem[i];
+            obj.username = arr[1][i]
             if(this.room_mem[i] == this.socketId) {
               obj.isThis = true
             } else {
@@ -525,7 +529,7 @@ export default {
     },
     time (time) {
       console.log(time)
-      this.percentage = time*2
+      this.percentage = time
       if(time === 1) {
         this.isQing = false
       }
@@ -600,6 +604,7 @@ export default {
   width: 100%;
 }
 .right-box {
+  
 }
 .left-box {
 
@@ -662,16 +667,16 @@ export default {
   color: white;
 }
 /* 发送按钮 */
-#sendMessage {
-  display: inline;
-  border: none;
-  border-radius: 10px;
-  background-color: #0d47a1;
-  color: white;
-  padding: 3px 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-}
+/*#sendMessage {*/
+/*  display: inline;*/
+/*  border: none;*/
+/*  border-radius: 10px;*/
+/*  background-color: #0d47a1;*/
+/*  color: white;*/
+/*  padding: 3px 10px;*/
+/*  margin-bottom: 10px;*/
+/*  margin-left: 20px;*/
+/*}*/
 
 .input-content {
   width: 200px;
@@ -699,8 +704,12 @@ export default {
 }
 .right-box {
   float: right;
+  background-color: white;
 }
 
+.ul-l > li {
+  border: 0px;
+}
 .exit {
   font-size: 31px;
   font-weight: bold;
@@ -782,6 +791,7 @@ li:last-child {
   transform: translateY(-50%);
   right: 10px;
 }
+
 .readybtn {
   background-color: #e6e6e4;
 }
