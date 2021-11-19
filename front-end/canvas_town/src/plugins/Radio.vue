@@ -348,7 +348,7 @@ export default {
     position: absolute;
     /* position:relative; */
     bottom: 4%;
-    left: -6%;
+    left: 6%;
 } 
 
 /* Generic */

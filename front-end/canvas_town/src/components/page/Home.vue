@@ -1,22 +1,20 @@
 <template>
-  <div class="container">
-      <div class="bounce"  >
+  <div class="home-container">
+      <div class="bounce">
         <span class="letter">倒</span>
         <span class="letter">放</span>
         <span class="letter">挑</span>
         <span class="letter">战</span>
-
     </div>
     <div class="name-space">
       <label for="" id="name-label">你的名字:</label>
        <button class="noselect">
           <input type="text" name="name" v-model="name" id="username" placeholder="输入你的名字" @keyup.enter="onSubmit">
         </button>
-     
       <label for="" id="name-tip">{{Tip}}</label>
     </div>
      <RadioC></RadioC>
-  </div>
+    </div>
 </template>
 <script>
 import RadioC from '../../plugins/Radio.vue'
@@ -42,25 +40,25 @@ export default {
       this.$router.push({
           path: "/gameHome"
       })
-      // let that = this
-      // this.$axios({
-      //   url: '/users/registerName',
-      //   method: 'post',
-      //   data: { username: this.name }
-      // }).then(res => {
-      //   let code = res.data.code
-      //   if (code === 0) {
-      //     console.log("注册成功")
-      //     // 前端保存
-      //     localStorage.setItem("name", this.name)
-      //     // 校验通过之后，进入gameHome
-      //     this.$router.push({
-      //       path: "/gameHome"
-      //     })
-      //   } else {
-      //     that.Tip = res.data.msg
-      //   }
-      // })
+      let that = this
+      this.$axios({
+        url: '/users/registerName',
+        method: 'post',
+        data: { username: this.name }
+      }).then(res => {
+        let code = res.data.code
+        if (code === 0) {
+          console.log("注册成功")
+          // 前端保存
+          localStorage.setItem("name", this.name)
+          // 校验通过之后，进入gameHome
+          this.$router.push({
+            path: "/gameHome"
+          })
+        } else {
+          that.Tip = res.data.msg
+        }
+      })
 
     }
   },
@@ -71,11 +69,10 @@ export default {
 </script>
 <style scoped>
 /** 全局为flex布局 */
-.container {
+.home-container {
+  width: 100%;
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 
