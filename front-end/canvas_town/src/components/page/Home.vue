@@ -37,9 +37,6 @@ export default {
       /**
        * code here
        */
-      this.$router.push({
-          path: "/gameHome"
-      })
       let that = this
       this.$axios({
         url: '/users/registerName',
