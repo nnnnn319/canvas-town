@@ -1,10 +1,18 @@
 <template>
   <div class="container">
-     
-    <div id="title">{{title}}</div>
+      <div class="bounce"  >
+        <span class="letter">倒</span>
+        <span class="letter">放</span>
+        <span class="letter">挑</span>
+        <span class="letter">战</span>
+
+    </div>
     <div class="name-space">
       <label for="" id="name-label">你的名字:</label>
-      <input type="text" name="name" v-model="name" id="username" placeholder="输入你的名字" @keyup.enter="onSubmit">
+       <button class="noselect">
+          <input type="text" name="name" v-model="name" id="username" placeholder="输入你的名字" @keyup.enter="onSubmit">
+        </button>
+     
       <label for="" id="name-tip">{{Tip}}</label>
     </div>
      <RadioC></RadioC>
@@ -15,11 +23,11 @@ import RadioC from '../../plugins/Radio.vue'
 export default {
   data () {
     return {
-      title: '倒放挑战',
       name: "",
       Tip: ''
     }
   },
+  
   components:{
     RadioC,
   },
@@ -66,12 +74,7 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
 }
-/* 倒放挑战 文字*/
-.container #title {
-  text-align: center;
-  font-size: 200px;
-  width: 100%;
-}
+
 
 /* 名字label + input */
 .name-space {
@@ -91,6 +94,7 @@ export default {
 
 /** 输入名字 input */
 .name-space #username {
+  outline: none;
   width: 300px;
   height: 45px;
   padding: 10px;
@@ -100,5 +104,107 @@ export default {
 .name-space #name-tip {
   font-size: 20px;
   color: red;
+}
+
+
+/* 按钮样式 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+		-webkit-tap-highlight-color: transparent;
+}
+
+button {
+  
+	width: 304px;
+	height: 50px;
+	cursor: pointer;
+	background: #6dd6d1;
+	border: none;
+border-radius: 15px;
+	box-shadow: 0px 10px 25px #57aba7, 0px -10px 25px #a6fffa, inset 0px -5px 10px #57aba7, inset 0px 5px 10px #a6fffa;
+	font-family: 'Damion', cursive;
+	color: white;
+	font-size: 20px;
+	transition: 500ms;
+}
+
+button:hover {
+		border: 2px solid #6dd6d1;
+	animation: hueRotation 2s linear infinite;
+}
+
+@keyframes hueRotation {
+	to {filter: hue-rotate(360deg);}
+}
+
+button:focus {
+	outline: none;
+}
+
+/* 文字样式 */
+
+.bounce {
+   text-align: center;
+  font-size: 200px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+	color: #2d303a;
+  height: 100%;
+  font: normal bold 6rem "Product Sans", sans-serif;
+  white-space: nowrap;
+}
+
+.letter {
+  animation: bounce 0.75s cubic-bezier(0.05, 0, 0.2, 1) infinite alternate;
+  display: inline-block;
+  transform: translate3d(0, 0, 0);
+  margin-top: 0.5em;
+  text-shadow: rgba(255, 255, 255, 0.4) 0 0 0.05em;
+  font: normal 500 10rem 'Varela Round', sans-serif;
+}
+.letter:nth-child(1) {
+  animation-delay: 0s;
+}
+.letter:nth-child(2) {
+  animation-delay: 0.0833333333s;
+}
+.letter:nth-child(3) {
+  animation-delay: 0.1666666667s;
+}
+.letter:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.letter:nth-child(5) {
+  animation-delay: 0.3333333333s;
+}
+.letter:nth-child(6) {
+  animation-delay: 0.4166666667s;
+}
+
+
+@keyframes bounce {
+  0% {
+    transform: translate3d(0, 0, 0);
+    text-shadow: rgba(255, 255, 255, 0.4) 0 0 0.05em;
+  }
+  100% {
+    transform: translate3d(0, -1em, 0);
+    text-shadow: rgba(255, 255, 255, 0.4) 0 1em 0.35em;
+  }
 }
 </style>
