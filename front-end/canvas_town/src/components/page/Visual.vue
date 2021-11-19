@@ -22,6 +22,7 @@
 export default {
   name:'Visual',
   data() {
+ 
     return {
     // musicUrl:''
     

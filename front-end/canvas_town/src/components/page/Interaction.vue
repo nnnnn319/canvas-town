@@ -1,5 +1,6 @@
 <template>
   <div class="bg">
+    <Ghost/>
       <div class="interact ">
       <div class="interact-contain">
 <!--        <div class="header">-->
@@ -135,17 +136,18 @@
 <script scope>
 // import Visual from '../page/Visual.vue'
 import Rhythm from '../../plugins/Rhythm.vue';
+import Ghost from '../../plugins/Ghost.vue';
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
     Rhythm,
+    Ghost,
     // Visual,
     // ChooseQestion
   },
 
 // mounted() {
-  
 //     if (location.href.indexOf("#Interaction")<=0) {
 //       location.href = location.href + "#Interaction";
 //       location.reload();
@@ -154,6 +156,7 @@ export default {
   
 // },
   data () {
+
     return {
       buffer: '',
       finish_record: false,
@@ -662,6 +665,7 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+   background: rgba(0, 0, 0, 0.1);
 }
 .right-box {
   
@@ -682,10 +686,6 @@ export default {
 }
 .center-box {
 
-}
-.room {
-  /* background-color: #0DF2DE; */
-  background-color: white;
 }
 .room-left {
   flex: 1;
