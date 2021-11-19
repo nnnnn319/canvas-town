@@ -3,7 +3,7 @@
      
      <button @click="btn">频谱跳动</button>
       <audio crossOrigin="anonymous" loop id="myaudio" ref="myaudio" src="../../assets/kanong.mp3">   </audio>
-    <canvas ref="canvas" id="canvas" style="width:100%;heigth:100%">
+    <canvas ref="mycanvas" id="mycanvas" style="width:100%;heigth:100%">
        
     </canvas>
     <!-- 给子组件绑定transmit自定义事件v-on:transmit="getMusic" -->
@@ -12,11 +12,13 @@
    top: 50%;
   transform: translate(-50%,-50%);"></Interaction>
   </div>
+ 
    </div>
 </template>
 
 <script>
 import Interaction from './Interaction.vue'
+
 export default {
   name:'Visual',
   data() {
@@ -24,11 +26,11 @@ export default {
     // musicUrl:''
     
     }
+  
   },
   components:{
     Interaction,
   },
-  
   methods: {
     // 从子组件获取音乐
     // getMusic(url){
@@ -39,6 +41,7 @@ export default {
     // },
 
       btn(){
+       
         var oAudio
         var dataArray
         var oCtx
@@ -47,13 +50,14 @@ export default {
         var bufferLength 
         var frameID
         // 利用cancas渐变进行音频绘制
-        var canvas =document.getElementById('canvas')
-        var ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        var mycanvas =document.getElementById('mycanvas')
+        var ctx = mycanvas.getContext('2d');
+        mycanvas.width = window.innerWidth;
+        mycanvas.height = window.innerHeight;
         ctx.save();
         let  myContainer = []; //存储 需保持的图形(会动的)
         initAudio();
+        
       function initAudio() {
         oAudio = document.getElementById('myaudio')
         oAudio.crossOrigin = "anonymous";
@@ -86,8 +90,8 @@ class MusicBall {
   }
   static create(bufferLength, container, detail) {
     for (let i = 0; i < bufferLength; i++) {
-      let x = Math.random() * canvas.width;
-      let y = Math.random() * canvas.height;
+      let x = Math.random() * mycanvas.width;
+      let y = Math.random() * mycanvas.height;
       let speedX = (Math.random() - 0.5) * 1;
       let speedY = (Math.random() - 0.5) * 1;
       let color =
@@ -98,7 +102,7 @@ class MusicBall {
   }
 
   static drawBall() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     myContainer.forEach((ball, index) => ball.update(dataArray[index]));
   }
   draw() {
@@ -110,11 +114,11 @@ class MusicBall {
   }
   update(frequencyVolume) {
     this.draw();
-    if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+    if (this.x + this.radius > mycanvas.width || this.x - this.radius < 0) {
       this.SpdX = -this.SpdX;
       this.x = this.x + this.SpdX;
     }
-    if (this.y + this.radius > canvas.heyight || this.y - this.radius < 0) {
+    if (this.y + this.radius > mycanvas.heyight || this.y - this.radius < 0) {
       this.SpdY = -this.SpdY;
       this.y = this.y + this.SpdY;
     }
@@ -123,8 +127,10 @@ class MusicBall {
     this.radius = frequencyVolume - 100 > 0 ? (frequencyVolume - 100) * 0.7 : 0;
   }
 }
+
+
       function rockMusic(drawFnc) {
-        // requestAnimationFrame 保证与屏幕刷新率一致,在每次执行时绘制canvas数据
+        // requestAnimationFrame 保证与屏幕刷新率一致,在每次执行时绘制mycanvas数据
          frameID = requestAnimationFrame(rockMusic.bind(this, drawFnc));
          analyser.getByteFrequencyData(dataArray);
          drawFnc();
@@ -146,7 +152,7 @@ class MusicBall {
        position:absolute;
        top: 0px;
     }
-        #canvas {
+        #mycanvas {
          width: 100%;
             height: 100%;
              pointer-events:none;

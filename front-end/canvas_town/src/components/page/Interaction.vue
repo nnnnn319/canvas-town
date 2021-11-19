@@ -13,6 +13,7 @@
         <div class="room">
           <!-- 左侧聊天区域 -->
           <div class="room-left">
+         
             <div class="left-box">
               <div class="time">
                 <i class="el-icon-alarm-clock"></i>10s
@@ -37,8 +38,15 @@
               </div>
             </div>
             <!-- 音乐可视化区域 -->
+                        <Rhythm style="position:absolute; left: 50%;
+   top: 50%;
+  transform: translate(-50%,-50%);"></Rhythm>
+
+
             <div class="center-box">
+                 
               <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+
               <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
               <!--上传文件-->
 
@@ -120,12 +128,15 @@
     </div>
 </template>
 <script scope>
+import Rhythm from '../../plugins/Rhythm.vue';
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
+    Rhythm
     // ChooseQestion
   },
+
   data () {
     return {
       //socketId 每次发送请求都要携带
@@ -608,7 +619,7 @@ export default {
 
 }
 .room {
-  background-color: #0DF2DE;
+  /* background-color: #0DF2DE; */
 }
 .room-left {
   flex: 1;
@@ -784,6 +795,7 @@ li:last-child {
   border-radius: 20px;
   background-color: #a6e3e9;
   padding: 10px 20px;
+  margin-top:9px
 }
 /*.el-button + .el-button {*/
 /*  margin-left: 0;*/
