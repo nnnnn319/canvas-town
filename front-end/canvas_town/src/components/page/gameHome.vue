@@ -17,7 +17,7 @@
         <b-button variant="outline-primary" class="room-button"  @click="guessMusic" >冲关挑战</b-button>
       </div>
       <div class="button-space">
-        <b-button variant="outline-primary" class="room-button" @click="openAdd">倒放挑战</b-button>
+        <b-button variant="outline-primary" class="room-button" @click="openAdd = !openAdd">倒放挑战</b-button>
       </div>
     </div>
     <div class="qier-img">
