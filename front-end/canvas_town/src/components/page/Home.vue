@@ -70,6 +70,7 @@ export default {
 <style scoped>
 /** 全局为flex布局 */
 .home-container {
+  margin-top: 10%;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
