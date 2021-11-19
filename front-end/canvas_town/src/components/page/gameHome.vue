@@ -1,7 +1,25 @@
 <template>
   <div class="game-hoom-container">
+    <div>
+      <b-modal v-model="openCreate" title="Create Room" @show="resetModal" @ok="createRoom">
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group id="select-group-1" label="游戏模式:" label-for="select-1" description="选择游戏模式">
+            <b-form-select id="select-1" v-model="form.gameType" :options="gameTypes" style="width:80%;" class="mt-3"></b-form-select>
+          </b-form-group>
+        </form>
+      </b-modal>
+    </div>
+    <div>
+      <b-modal  title="Add Room"  v-model="openAdd"  @show="resetModal" @ok="addRoom">
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
+            <b-input id="input-1" v-model="roomNumber"></b-input>
+          </b-form-group>
+        </form>
+      </b-modal>
+    </div>
+    
     <div class="title-img">
-      
       <img id="title-img" src="../../assets/img/字体.png" alt="">
     </div>
     <div class="button-group">
@@ -22,20 +40,6 @@
         <button @click="logout">退出登录</button>
     </div>
     </div>
-    <b-modal id="create-room" ref="create-room-modal" v-model="openCreate" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group id="select-group-1" label="游戏模式:" label-for="select-1" description="选择游戏模式">
-          <b-form-select id="select-1" v-model="form.gameType" :options="gameTypes" style="width:80%;" class="mt-3"></b-form-select>
-        </b-form-group>
-      </form>
-    </b-modal>
-    <b-modal id="add-room" ref="add-room-modal" title="Add Room"  v-model="openAdd"  @show="resetModal" @hidden="resetModal" @ok="addRoom">
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group id="select-group-1" label="请输入您要加入的房间号:" label-for="input-1">
-          <b-input id="input-1" v-model="roomNumber"></b-input>
-        </b-form-group>
-      </form>
-    </b-modal>
   </div>
 </template>
 <script>
@@ -59,6 +63,8 @@ export default {
       openAdd: false,
       openCreate: false,
     }
+  },
+  mounted(){
   },
   methods: {
     createRoom: function () {
