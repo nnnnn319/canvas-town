@@ -1,15 +1,15 @@
 <template>
     <div class="interact">
       <div class="interact-contain">
-<!--        <div class="header">-->
-<!--&lt;!&ndash;          <div class="logo">&ndash;&gt;-->
-<!--&lt;!&ndash;            倒放挑战1号房间&ndash;&gt;-->
-<!--&lt;!&ndash;          </div>&ndash;&gt;-->
-<!--&lt;!&ndash;          <div v-if="this.isQing">&ndash;&gt;-->
-<!--&lt;!&ndash;            {{this.q_socket}}正在出题&ndash;&gt;-->
-<!--&lt;!&ndash;          </div>&ndash;&gt;-->
-<!--&lt;!&ndash;          <i class="el-icon-close exit" @click="exit"></i>&ndash;&gt;-->
-<!--        </div>-->
+        <div class="header">
+          <div class="logo">
+            倒放挑战1号房间
+          </div>
+          <div v-if="this.isQing">
+            {{this.q_username}}正在出题
+          </div>
+          <i class="el-icon-close exit" @click="exit"></i>
+        </div>
         <div class="room">
           <!-- 左侧聊天区域 -->
           <div class="room-left">
@@ -29,9 +29,9 @@
                 </div>
                 <div class="chat-contain">
                   <div class="chat-footer">
-                    <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
+                    <el-input class="input-content" placeholder="按下回车键发送" @keyup.enter.native="unfold"  v-model="input2">
                     </el-input>
-                    <button @click="unfold" id="sendMessage">发送</button>
+<!--                    <b-button variant="outline-primary" @click="unfold" id="sendMessage"> 发送 </b-button>-->
                   </div>
                 </div>
               </div>
@@ -58,8 +58,8 @@
                         <div class="score">{{user.score}}分</div>
                       </div>
                       <!--不显示其他用户的这个按钮-->
-                      <button @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)">开始挑战</button>
-                      <el-tag type="success" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
+                      <b-button variant="outline-primary" @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)" class="readyTag">开始挑战</b-button>
+                      <el-tag type="error" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
                       <el-tag type="success" class="readyTag" v-if="user.ready_status">已准备</el-tag>
                     </div>
                   </li>
@@ -452,11 +452,14 @@ export default {
 
   },
   sockets: {
-    room_member (arr) {
+    room_member (arr, user_arr) {
       console.log('room_member')
-      console.log(arr)
-      this.room_mem = arr
+      console.log(arr[0])
+      console.log(arr[1])
+      console.log(user_arr)
+      this.room_mem = arr[0]
       this.users = [];
+
       for(let i=0;i<this.room_mem.length;i++){
           let obj = {
             id:'',
@@ -468,6 +471,7 @@ export default {
             isThis: false
           }
             obj.id = this.room_mem[i];
+            obj.username = arr[1][i]
             if(this.room_mem[i] == this.socketId) {
               obj.isThis = true
             } else {
@@ -652,16 +656,16 @@ export default {
   color: white;
 }
 /* 发送按钮 */
-#sendMessage {
-  display: inline;
-  border: none;
-  border-radius: 10px;
-  background-color: #0d47a1;
-  color: white;
-  padding: 3px 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-}
+/*#sendMessage {*/
+/*  display: inline;*/
+/*  border: none;*/
+/*  border-radius: 10px;*/
+/*  background-color: #0d47a1;*/
+/*  color: white;*/
+/*  padding: 3px 10px;*/
+/*  margin-bottom: 10px;*/
+/*  margin-left: 20px;*/
+/*}*/
 
 .input-content {
   width: 200px;
@@ -776,6 +780,7 @@ li:last-child {
   transform: translateY(-50%);
   right: 10px;
 }
+
 .readybtn {
   background-color: #e6e6e4;
 }
