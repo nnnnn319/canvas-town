@@ -39,25 +39,28 @@ export default {
       /**
        * code here
        */
-      let that = this
-      this.$axios({
-        url: '/users/registerName',
-        method: 'post',
-        data: { username: this.name }
-      }).then(res => {
-        let code = res.data.code
-        if (code === 0) {
-          console.log("注册成功")
-          // 前端保存
-          localStorage.setItem("name", this.name)
-          // 校验通过之后，进入gameHome
-          this.$router.push({
-            path: "/gameHome"
-          })
-        } else {
-          that.Tip = res.data.msg
-        }
+      this.$router.push({
+          path: "/gameHome"
       })
+      // let that = this
+      // this.$axios({
+      //   url: '/users/registerName',
+      //   method: 'post',
+      //   data: { username: this.name }
+      // }).then(res => {
+      //   let code = res.data.code
+      //   if (code === 0) {
+      //     console.log("注册成功")
+      //     // 前端保存
+      //     localStorage.setItem("name", this.name)
+      //     // 校验通过之后，进入gameHome
+      //     this.$router.push({
+      //       path: "/gameHome"
+      //     })
+      //   } else {
+      //     that.Tip = res.data.msg
+      //   }
+      // })
 
     }
   },

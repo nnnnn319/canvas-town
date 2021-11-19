@@ -29,7 +29,7 @@ export default new VueRouter({
             component: () =>
                 import ( /* webpackChunkName: "pageHome" */ '../components/page/gameHome.vue'),
             // 设置相应元信息
-            meta: { title: 'gameHome组件', requireAuth: true },
+            meta: { title: 'gameHome组件'},
         },
         {
             path: '/Visual',

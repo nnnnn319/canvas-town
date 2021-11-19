@@ -1,136 +1,116 @@
 <template>
-
     <div class="interact">
-    <div class="interact-contain">
-      <div class="header">
-        <div class="logo">
-          倒放挑战1号房间
+      <div class="interact-contain">
+        <div class="header">
+          <div class="logo">
+            倒放挑战1号房间
+          </div>
+          <div v-if="this.isQing">
+            {{this.q_socket}}正在出题
+          </div>
+          <i class="el-icon-close exit" @click="exit"></i>
         </div>
-        <div v-if="this.isQing">
-          {{this.q_socket}}正在出题
-        </div>
-        <i class="el-icon-close exit" @click="exit"></i>
-      </div>
-      <div class="room">
-        <!-- 左侧聊天区域 -->
-        <div class="left-box">
-          <div class="chat">
-            <div id="chat-father" ref="chatInnerDiv">
-              <ul id="chat-content" ref="chatUl">
-                <li v-for="item in items" :key="item.message" id="chat-item">
-                  {{item.message}}
-                </li>
-              </ul>
+        <div class="room">
+          <!-- 左侧聊天区域 -->
+          <div class="room-left">
+            <div class="left-box">
+              <div class="time">
+                <i class="el-icon-alarm-clock"></i>10s
+              </div>
+              <el-progress :percentage="percentage" :format="format"></el-progress>
+              <!--              <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>-->
+              <div class="chat">
+                <div id="chat-father" ref="chatInnerDiv">
+                  <ul id="chat-content" ref="chatUl">
+                    <li v-for="item in items" :key="item.message" id="chat-item">
+                      {{item.message}}
+                    </li>
+                  </ul>
+                </div>
+                <div class="chat-contain">
+                  <div class="chat-footer">
+                    <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
+                    </el-input>
+                    <button @click="unfold" id="sendMessage">发送</button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="chat-contain">
-              <div class="chat-footer">
-                <el-input class="input-content" placeholder="请输入聊天内容" @keyup.enter.native="unfold" prefix-icon="el-icon-edit" v-model="input2">
-                </el-input>
-                <button @click="unfold" id="sendMessage">发送</button>
+            <!-- 音乐可视化区域 -->
+            <div class="center-box">
+
+              <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
+              <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
+              <!--上传文件-->
+              <div v-show="(this.q_socket == this.socketId)">
+                <br/>
+                <br/>
+                <el-upload
+                        class="upload-demo"
+                        multiple
+                        action="#"
+                        :limit="1"
+                        :on-change	="handleChange"
+                        :file-list="fileList">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
+                </el-upload>
+                <!--录音区域-->
+                <div class="app">
+                  <button class="record-btn">record</button>
+                  <audio controls class="audio-player"></audio>
+                </div>
+                <div>
+                  <label>请输入答案</label>
+                  <el-input v-model="result" placeholder="请输入内容"></el-input>
+                  <el-button @click="submit_result()">提交</el-button>
+                </div>
+              </div>
+              <div v-show="isAnswer">
+                <!--            //控制输出-->
+                <label>请输入答案</label>
+                <el-input v-model="self_result" placeholder="请输入内容"></el-input>
+                <el-button @click="submit_self_result()">提交</el-button>
+              </div>
+              <div>
+                {{judge_result}}
               </div>
             </div>
           </div>
-        </div>
-        <!-- 音乐可视化区域 -->
-        <div class="center-box">
-          <div class="time">
-            <i class="el-icon-alarm-clock"></i>10s
-          </div>
-          <el-progress :percentage="percentage" :format="format"></el-progress>
-          <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>
-          <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
-<!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
-          <!--上传文件-->
-          <div v-show="(this.q_socket == this.socketId)">
-              <br/>
-              <br/>
-            <el-upload
-                    class="upload-demo"
-                    multiple
-                    action="#"
-                    :limit="1"
-                    :on-change	="handleChange"
-                    :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
-            </el-upload>
-            <!--录音区域-->
-            <div class="app">
-              <button class="record-btn">record</button>
-              <audio controls class="audio-player"></audio>
-            </div>
-            <div>
-              <label>请输入答案</label>
-              <el-input v-model="result" placeholder="请输入内容"></el-input>
-              <el-button @click="submit_result()">提交</el-button>
+          <!-- 右侧头像区域 -->
+          <div class="right-box">
+            <div class="users">
+              <el-scrollbar>
+                <ul>
+                  <li v-for="user in users" :key="user.id">
+                    <div class="user">
+                      <i class="el-icon-microphone" v-if="user.status" :class="{microphone:user.status}"></i>
+                      <div class="avatar " :class="{'cur-avatar':user.status}"></div>
+                      <div class="info " :class="{'cur-info':user.status}">
+                        <div class="nickname">{{user.username}}</div>
+                        <div class="score">{{user.score}}分</div>
+                      </div>
+                      <!--不显示其他用户的这个按钮-->
+                      <button @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)">开始挑战</button>
+                      <el-tag type="success" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
+                      <el-tag type="success" class="readyTag" v-if="user.ready_status">已准备</el-tag>
+                    </div>
+                  </li>
+                  <li v-for="(n,i) in emptyNum" :key="i+'only'">
+                    <div class="user">
+                      <div class="avatar empty">
+                        <i class="el-icon-user-solid"></i>
+                      </div>
+                      <div class="info info-empty">空位</div>
+                    </div>
+                  </li>
+                </ul>
+              </el-scrollbar>
             </div>
           </div>
-          <div v-show="isAnswer">
-<!--            //控制输出-->
-            <label>请输入答案</label>
-            <el-input v-model="self_result" placeholder="请输入内容"></el-input>
-            <el-button @click="submit_self_result()">提交</el-button>
-          </div>
-          <div>
-            {{judge_result}}
-          </div>
-<!--=======-->
-<!--          <div class="preparation" v-if="false">-->
-<!--            <el-button type="primary" class="beginGame" v-if="userSelf.userType === 'admin'">开始游戏</el-button>-->
-<!--            <el-button type="success" class="readyGame" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
-<!--          </div>-->
-<!--          <div class="already-play">-->
-<!--            <el-button type="primary" class="began-to-challenge beginGame" @click="startChallenge()">开始挑战</el-button>-->
-<!--            &lt;!&ndash;上传文件&ndash;&gt;-->
-<!--            <el-upload class="upload-demo" multiple action="#" :limit="1" :on-change="handleChange" :file-list="fileList">-->
-<!--              <el-button size="small" class="choose-file" type="primary">选择文件</el-button>-->
-<!--              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-<!--            </el-upload>-->
-<!--            <el-button type="success" class="upload-file readyGame" @click="sendFile()">上传文件</el-button>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;    <el-input type="file" id="file" accept="audio/x-wav,audio/mpeg"></el-input>&ndash;&gt;-->
-<!--&gt;>>>>>> dad9c82441f529471d8cd5bf5071d5b2764012e6-->
-        </div>
-        <!-- 右侧头像区域 -->
-        <div class="right-box">
-          <div class="users">
-            <el-scrollbar style="height:100%">
-              <ul>
-                <li v-for="user in users" :key="user.id">
-                  <div class="user">
-                    <i class="el-icon-microphone" v-if="user.status" :class="{microphone:user.status}"></i>
-                    <div class="avatar " :class="{'cur-avatar':user.status}"></div>
-                    <div class="info " :class="{'cur-info':user.status}">
-                      <div class="nickname">{{user.username}}</div>
-                      <div class="score">{{user.score}}分</div>
-                    </div>
-                    <!--不显示其他用户的这个按钮-->
-                    <button @click="startChallenge()" v-show="((!user.ready_status)&& user.isThis)">开始挑战</button>
-                    <el-tag type="success" class="readyTag" v-if="(!user.ready_status) && (!user.isThis)">未准备</el-tag>
-                    <el-tag type="success" class="readyTag" v-if="user.ready_status">已准备</el-tag>
-                  </div>
-                </li>
-                <li v-for="(n,i) in emptyNum" :key="i+'only'">
-                  <div class="user">
-                    <div class="avatar empty">
-                      <i class="el-icon-user-solid"></i>
-                    </div>
-                    <div class="info info-empty">空位</div>
-                  </div>
-                </li>
-              </ul>
-            </el-scrollbar>
-          </div>
-        </div>
-        <!-- <choose-qestion class="choose-question"></choose-qestion> -->
-        <div class="profile-space">
-          <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
-          <p id="profile-name">username</p>
         </div>
       </div>
     </div>
-  </div>
-
 </template>
 <script scope>
 // import ChooseQestion from '../common/ChooseQestion.vue'
@@ -576,35 +556,54 @@ export default {
 }
 /* body的8px要去掉 */
 .interact {
-  display: flex;
+  /*display: flex;*/
   position: absolute;
-  justify-content: center;
-  align-items: center;
+  /*justify-content: center;*/
+  /*align-items: center;*/
+  width: 100%;
   border-radius: 10px;
-background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 40px;
 }
 .room {
   position: relative;
   display: flex;
   justify-content: space-between;
-  width: 842px;
-  height: 518px;
+  align-items: flex-start;
+  width: 100%;
+}
+.right-box {
 }
 .left-box {
+
 }
 .chat {
   position: relative;
   width: 300px;
-  height: 500px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  /*height: 500px;*/
+  /*border: 1px solid rgba(255, 255, 255, 0.3);*/
+  /*border: 1px solid;*/
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.3);
+  /*background-color: rgba(255, 255, 255, 0.3);*/
+  align-self: flex-end;
+  top: 0px
+}
+.center-box {
+
+}
+.room-left {
+  flex: 1;
+  background: url("~@/assets/img/1.png");
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  height: 498px;
 }
 .chat-contain {
   padding: 10px;
@@ -618,9 +617,9 @@ background: rgba(0, 0, 0, 0.1);
 }
 /* 显示所有的发言记录 */
 #chat-content {
-  border: solid 1px rgba(255, 255, 255, 0.3);
+  /*border: solid 1px rgba(255, 255, 255, 0.3);*/
   font-size: 14px;
-  height: 430px;
+  height: 390px;
   width: 280px;
   border-radius: 10px;
   margin: 5px;
@@ -635,7 +634,8 @@ background: rgba(0, 0, 0, 0.1);
   width: fit-content;
   margin: 5px;
   padding: 5px;
-  background-color: #e1f5fe;
+  /*background-color: #e1f5fe;*/
+  color: white;
 }
 /* 发送按钮 */
 #sendMessage {
@@ -674,7 +674,9 @@ background: rgba(0, 0, 0, 0.1);
   position: relative;
 }
 .right-box {
+  float: right;
 }
+
 .exit {
   font-size: 31px;
   font-weight: bold;
