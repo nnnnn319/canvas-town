@@ -18,12 +18,12 @@ export default new VueRouter({
             // 设置相应元信息
             meta: { title: 'Home组件' }
         },
-        // {
-        //     path: '/interaction',
-        //     name: 'interaction',
-        //     component: () =>
-        //         import ('../components/page/Interaction.vue')
-        // },
+        {
+            path: '/interaction',
+            name: 'interaction',
+            component: () =>
+                import ('../components/page/Interaction.vue')
+        },
         {
             path: '/gameHome',
             component: () =>
@@ -31,13 +31,13 @@ export default new VueRouter({
             // 设置相应元信息
             meta: { title: 'gameHome组件' },
         },
-        {
-            path: '/Visual',
-            name: 'Visual',
-            component: () =>
-                import ('../components/page/Visual.vue'),
-            meta: { title: 'interaction父组件' },
-        },
+        // {
+        //     path: '/Visual',
+        //     name: 'Visual',
+        //     component: () =>
+        //         import ('../components/page/Visual.vue'),
+        //     meta: { title: 'interaction父组件' },
+        // },
         {
             path: '/guessMusic',
             name: 'guessMusic',
