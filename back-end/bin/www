@@ -4,18 +4,16 @@
  * Module dependencies.
  */
 
-// var app = require('../app');
+var app = require('../app');
 var debug = require('debug')('backend:server');
-// var http = require('http');
-
-const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
+var http = require('http');
 const { Server } = require("socket.io");
-const io = new Server(server, {cors: true});
+
+
+
+
+
 const fs = require('fs');
-const { SSL_OP_EPHEMERAL_RSA } = require('constants');
 
 /**
  * Get port from environment and store in Express.
@@ -28,8 +26,8 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-// var server = http.createServer(app);
-
+var server = http.createServer(app);
+const io = new Server(server, {cors: true});
 /**
  * Listen on provided port, on all network interfaces.
  */

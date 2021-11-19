@@ -36,7 +36,7 @@ export default new VueRouter({
             name: 'Visual',
             component: () =>
                 import ('../components/page/Visual.vue'),
-            meta: { title: 'interaction父组件' },
+            meta: { title: 'interaction父组件'},
         },
     ]
 })
