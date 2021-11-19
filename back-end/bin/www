@@ -163,6 +163,7 @@ io.on('connection', (socket) => {
       } else {
         socketInRoom.get(num).push(id)
         userInRoom.get(num).push(name)
+        io.to(num).emit('msg', socketInRoom.get(num).length)
       }
     } else {
       socketInRoom.set(num, [])
@@ -180,10 +181,10 @@ io.on('connection', (socket) => {
   })
   //发送消息 相当于聊天功能
   socket.on('chat message', (msg, id) => {
-    console.log('message: ' + msg + " " + id);
     //广播
     let room = socketRoom.get(id)
     let username = userInRoom.get(room)[socketInRoom.get(room).indexOf(id)]
+    console.log('message: ' + msg + " " + id + username);
     console.log(room)
     io.to(room).emit('chat_message', username+": "+msg);
   });
