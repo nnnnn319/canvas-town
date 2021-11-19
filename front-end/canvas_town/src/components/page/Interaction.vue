@@ -1,27 +1,24 @@
 <template>
     <div class="interact">
-      <div class="interact-contain">
+      <div class="interact-container">
 <!--        <div class="header">-->
 <!--          -->
 <!--          <i class="el-icon-close exit" @click="exit"></i>-->
 <!--        </div>-->
-
-        <div class="room">
-          <div v-if="this.isQing" class="question">
-            {{this.q_username}}正在出题
+          <div class="room-title">
+            <div class="question">
+              {{this.q_username}}正在出题
+            </div>
           </div>
           <!-- 左侧聊天区域 -->
           <div class="room-left">
-         
             <div class="left-box">
               <div class="time" >
                 <i class="el-icon-alarm-clock"></i>{{percentage}}s
               </div>
-<!--              <el-progress :percentage="percentage" :format="format"></el-progress>-->
-              <!--              <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>-->
               <div class="chat">
-                <div id="chat-father" ref="chatInnerDiv">
-                  <ul id="chat-content" ref="chatUl">
+                <div class="chat-father" ref="chatInnerDiv">
+                  <ul class="chat-content" ref="chatUl">
                     <li v-for="item in items" :key="item.message" id="chat-item">
                       {{item.message}}
                     </li>
@@ -31,25 +28,16 @@
                   <div class="chat-footer">
                     <el-input class="input-content" placeholder="按下回车键发送" @keyup.enter.native="unfold"  v-model="input2">
                     </el-input>
-<!--                    <b-button variant="outline-primary" @click="unfold" id="sendMessage"> 发送 </b-button>-->
                   </div>
                 </div>
               </div>
             </div>
-            <!-- 音乐可视化区域 -->
-                        <Rhythm style="position:absolute; left: 50%;
-   top: 50%;
-  transform: translate(-50%,-50%);"></Rhythm>
-
-
-            <div class="center-box">
-              <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
-
-              <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
-              <!--上传文件-->
-
-            </div>
           </div>
+            <div class="center-box">
+              <div class="canvas-space">
+                <canvas ref="canvas" id="canvas" style="width:100%; height:100%;"></canvas>
+              </div>
+            </div>
           <!-- 右侧头像区域 -->
           <div class="right-box">
             <div class="users">
@@ -81,7 +69,6 @@
               </el-scrollbar>
             </div>
           </div>
-        </div>
         <!--下侧输入区域-->
         <div v-show="(this.q_socket == this.socketId)" class="file-load">
           <el-switch
@@ -105,7 +92,7 @@
             <div class="record_region" v-if="upload_value">
               <!--                  <el-button size="medium"  >record</el-button>-->
               <el-button type="primary" size='medium' icon="el-icon-microphone" class="record-btn"></el-button>
-              <audio controls class="audio-player"></audio>
+              <audio controls class="audio-player" id="myaudio"></audio>
             </div>
           </div>
           <div>
@@ -130,12 +117,12 @@
     </div>
 </template>
 <script scope>
-import Rhythm from '../../plugins/Rhythm.vue';
+// import Rhythm from '../../plugins/Rhythm.vue';
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
-    Rhythm
+    // Rhythm
     // ChooseQestion
   },
 
@@ -189,6 +176,108 @@ export default {
     }
   },
   methods: {
+    // 载入音量可视化
+        loadMusicView(){
+            // 获取音频
+            var oAudio
+            var dataArray
+            var oCtx
+            var analyser
+            var audioSrc
+            var bufferLength 
+            var frameID
+            // 利用cancas渐变进行音频绘制
+            var canvas =document.getElementById('canvas')
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.save();
+            let  myContainer = []; //存储 需保持的图形(会动的)
+            initAudio();
+        function initAudio() {
+            console.log(document)
+            oAudio = document.getElementById('myaudio')
+            oAudio.crossOrigin = "anonymous";
+            oAudio.play();
+        // 创建音频上下文对象
+            oCtx = new AudioContext();
+                // 创建分析机 
+            analyser = oCtx.createAnalyser();
+            // 创建媒体源
+            audioSrc = oCtx.createMediaElementSource(oAudio);
+            // 媒体源与分析机连接
+            audioSrc.connect(analyser);
+            // 输出的目标：将分析机分析出来的处理结果与目标点（耳机/扬声器）连接
+            analyser.connect(oCtx.destination);
+            // 设置傅里叶变化参数
+            analyser.fftSize =128;
+            //根据范围得到不同音频的数量的长度
+            bufferLength = analyser.frequencyBinCount;
+            dataArray= new Uint8Array(bufferLength);
+            }
+            class MusicBall {
+                constructor(x, y, speedX, speedY, radius, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.SpdX = speedX;
+                    this.SpdY = speedY;
+                    this.radius = radius;
+                    this.color = color;
+                }
+            static create(bufferLength, container, detail) {
+                for (let i = 0; i < bufferLength; i++) {
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let speedX = (Math.random() - 0.5) * 1;
+                let speedY = (Math.random() - 0.5) * 1;
+                let color =
+                    detail.colorList[Math.floor(Math.random() * detail.colorList.length)];
+                let radius = 0;
+                container.push(new MusicBall(x, y, speedX, speedY, radius, color));
+                }
+            }
+
+            static drawBall() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                myContainer.forEach((ball, index) => ball.update(dataArray[index]));
+            }
+            draw() {
+                ctx.beginPath(); //开始绘制
+
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            }
+            update(frequencyVolume) {
+                this.draw();
+                if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+                this.SpdX = -this.SpdX;
+                this.x = this.x + this.SpdX;
+                }
+                if (this.y + this.radius > canvas.heyight || this.y - this.radius < 0) {
+                this.SpdY = -this.SpdY;
+                this.y = this.y + this.SpdY;
+                }
+                this.x = this.x + this.SpdX;
+                this.y = this.y + this.SpdY;
+                this.radius = frequencyVolume - 100 > 0 ? (frequencyVolume - 100) * 0.7 : 0;
+            }
+            }
+            function rockMusic(drawFnc) 
+            {
+                // requestAnimationFrame 保证与屏幕刷新率一致,在每次执行时绘制canvas数据
+                frameID = requestAnimationFrame(rockMusic.bind(this, drawFnc));
+                analyser.getByteFrequencyData(dataArray);
+                drawFnc();
+            }
+                ctx.restore();
+                ctx.save();
+                MusicBall.create(bufferLength, myContainer, {
+                    colorList: ["#F7B2B78a", "#5FC1BF", "#DE639A8a", "#7F29828a", "#16001E8a",]
+                });
+                frameID ? cancelAnimationFrame(frameID) : "";
+                rockMusic(MusicBall.drawBall);    
+        },
     //   展开快捷会话的弹窗
     unfold () { //点击聊天气泡触发该函数
       // 将输入push到数组中
@@ -396,7 +485,7 @@ export default {
       } else {
         alert('上传内容不全')
       }
-
+      this.loadMusicView()
       this.result = ''
     },
     //回答-自己的答案
@@ -479,7 +568,9 @@ export default {
     //录制音频函数
     this.record()
     this.$socket.emit('get room', this.$socket.id)
-
+    let audio = document.getElementById('myaudio')
+    audio.src = "/Mojito.mp3"
+    this.loadMusicView()
   },
   sockets: {
     room_member (arr, user_arr) {
@@ -617,15 +708,22 @@ export default {
 }
 /* body的8px要去掉 */
 .interact {
-  /*display: flex;*/
-  position: absolute;
   width:100%;
-  /*justify-content: center;*/
-  /*align-items: center;*/
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
+  height: 100%;
+  background: rgb(244, 249, 249);
+}
 
+.interact-container{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.chat-father{
+  height: 90%;
+  background-color: white;
 }
 .header {
   display: flex;
@@ -641,14 +739,17 @@ export default {
   width: 100%;
 }
 .right-box {
-  
+  width: 20%;
+  height: 70%;
 }
 .left-box {
-
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }
 .chat {
-  position: relative;
-  width: 300px;
+  width: 100%;
+  height: 92%;
   /*height: 500px;*/
   /*border: 1px solid rgba(255, 255, 255, 0.3);*/
   /*border: 1px solid;*/
@@ -658,28 +759,34 @@ export default {
   top: 0px
 }
 .center-box {
-
+  width: 50%;
+  margin: 0 5% 0 5%;
 }
 .room {
   /* background-color: #0DF2DE; */
   background-color: white;
 }
+.room-title{
+  width: 100%;
+  height: 10%;
+  text-align: center;
+}
 .room-left {
-  flex: 1;
+  display: flex;
+  width: 15%;
+  margin-left: 5%;
   /*background: url("~@/assets/img/1.png");*/
   align-self: center;
-  display: flex;
   flex-direction: row;
-  height: 400px;
+  height: 80%;
 }
 .chat-contain {
   padding: 10px;
+  height: 10%;
   /*border: 1px solid;*/
 }
 .chat-footer {
-  position: absolute;
   bottom: 10px;
-  width: 100%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -687,7 +794,7 @@ export default {
 #chat-content {
   /*border: solid 1px rgba(255, 255, 255, 0.3);*/
   font-size: 14px;
-  height: 300px;
+  height: 80%;
   width: 280px;
   border-radius: 10px;
   margin: 5px;
@@ -718,10 +825,9 @@ export default {
 /*}*/
 
 .input-content {
-  width: 200px;
+  width: 100%;
   height: 30px;
   border-radius: 20px;
-  left: 0;
 }
 ::v-deep .el-input__inner {
   border-radius: 15px;
@@ -738,9 +844,7 @@ export default {
   height: 300px;
   border-radius: 10px;
 }
-.center-box {
-  position: relative;
-}
+
 .right-box {
   float: right;
   background-color: white;
@@ -835,15 +939,14 @@ li:last-child {
   background-color: #e6e6e4;
 }
 .time {
-  width: 150px;
+  width: 50%;
+  height: 8%;
+  margin: 0 25% 0 25%;
   font-size: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   border: 3px solid #000;
   border-radius: 20px;
-  background-color: #a6e3e9;
-  padding: 10px 20px;
+  background-color: rgb(255, 239, 120);
+  padding-left: 30px;
   margin-top:9px
 }
 /*.el-button + .el-button {*/
@@ -917,13 +1020,18 @@ li:last-child {
     justify-content: flex-start;
     align-items: baseline;
     margin-top: 20px;
-  }
-  .question {
-    position: absolute;
+    height: 10%;
   }
 
   .answer_result {
     display: flex;
+  }
+
+  .canvas-space{
+    width: 100%;
+    height: 100%;
+    background-color: #A6E3E9;
+    border-radius: 40px;
   }
 
 </style>
