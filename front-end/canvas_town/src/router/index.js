@@ -31,13 +31,13 @@ export default new VueRouter({
             // 设置相应元信息
             meta: { title: 'gameHome组件' },
         },
-        // {
-        //     path: '/Visual',
-        //     name: 'Visual',
-        //     component: () =>
-        //         import ('../components/page/Visual.vue'),
-        //     meta: { title: 'interaction父组件' },
-        // },
+        {
+            path: '/Visual',
+            name: 'Visual',
+            component: () =>
+                import ('../components/page/Visual.vue'),
+            meta: { title: '可视化组件' },
+        },
         {
             path: '/guessMusic',
             name: 'guessMusic',

@@ -1,5 +1,7 @@
 <template>
-    <div class="interact">
+  <div class="bg">
+    <Ghost/>
+      <div class="interact ">
       <div class="interact-contain">
 <!--        <div class="header">-->
 <!--          -->
@@ -132,17 +134,28 @@
         </div>
       </div>
     </div>
+    <!-- <Visual/> -->
+  </div>
 </template>
 <script scope>
-// import Rhythm from '../../plugins/Rhythm.vue';
+import Rhythm from '../../plugins/Rhythm.vue';
+import Ghost from '../../plugins/Ghost.vue';
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
-    // Rhythm
-    // ChooseQestion
+    Rhythm,
+    Ghost,
   },
 
+// mounted() {
+//     if (location.href.indexOf("#Interaction")<=0) {
+//       location.href = location.href + "#Interaction";
+//       location.reload();
+//     }
+//     console.log('gggg')
+  
+// },
   data () {
     return {
       s: '../../assets/kanong.mp3',
@@ -589,6 +602,11 @@ export default {
   margin: 0;
   padding: 0;
 }
+.bg{
+  width: 100%;
+  height: 100%;
+       background: linear-gradient(135deg, rgb(40,111,207) 0%, rgb(40,188,218) 100%);
+}
 .logo {
   font-size: 2em;
   text-align: center;
@@ -602,6 +620,9 @@ export default {
 .interact {
   /*display: flex;*/
   position: absolute;
+  top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   width:100%;
   /*justify-content: center;*/
   /*align-items: center;*/
@@ -622,6 +643,7 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+   background: rgba(0, 0, 0, 0.1);
 }
 .right-box {
   
@@ -642,10 +664,6 @@ export default {
 }
 .center-box {
 
-}
-.room {
-  /* background-color: #0DF2DE; */
-  background-color: white;
 }
 .room-left {
   flex: 1;
