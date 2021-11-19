@@ -589,6 +589,7 @@ export default {
   width: 100%;
 }
 .right-box {
+  
 }
 .left-box {
 

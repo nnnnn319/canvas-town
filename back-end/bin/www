@@ -146,8 +146,8 @@ io.on('connection', (socket) => {
 //   var roomID = splited[splited.length - 1];
 //   console.log("room_id" + roomID)
   //加入不同的房间
-  socket.on('room', (id, num) => {
-    console.log(id + " join room " + num)
+  socket.on('room', (id, num, name) => {
+    console.log(`${name} join room${num} | id:${id}`)
     socketList.get(id).join(num)
     socketRoom.set(id, num)
     // console.log(socket.rooms)

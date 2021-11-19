@@ -1,5 +1,9 @@
 <template>
   <div class="game-hoom-container">
+    <div class="title-img">
+      
+      <img id="title-img" src="../../assets/img/字体.png" alt="">
+    </div>
     <div class="button-group">
       <div class="button-space">
         <b-button variant="outline-primary" class="room-button" v-b-modal.create-room>创建房间</b-button>
@@ -8,10 +12,15 @@
         <b-button variant="outline-primary" class="room-button" v-b-modal.add-room>加入房间</b-button>
       </div>
     </div>
-    <div class="profile-space">
-      <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
-      <p id="profile-name">{{username}}</p>
-      <button @click="logout">退出登录</button>
+    <div class="qier-img">
+      <div id="qier-img">
+        <img height="300px;" src="../../assets/img/企鹅.png" alt="">
+      </div>
+      <div class="profile-space">
+        <b-img rounded="circle" alt="Circle image" src="https://picsum.photos/125/125/?image=58" style="width: 70px;"></b-img>
+        <p id="profile-name">{{username}}</p>
+        <button @click="logout">退出登录</button>
+    </div>
     </div>
     <b-modal id="create-room" ref="create-room-modal" title="Create Room" @show="resetModal" @hidden="resetModal" @ok="createRoom">
       <form ref="form" @submit.stop.prevent="handleSubmit">
@@ -65,7 +74,7 @@ export default {
       console.log("你加入了房间")
       console.log("房间信息", this.roomNumber)
       //加入房间  发送socketio请求
-      this.$socket.emit('room', this.$socket.id, this.roomNumber)
+      this.$socket.emit('room', this.$socket.id, this.roomNumber, localStorage.getItem("name"))
       this.$router.push({
         path: '/interaction'
       })
@@ -102,10 +111,28 @@ export default {
 }
 </script>
 <style scoped>
+.title-img{
+  display: flex;
+  justify-content: center;
+}
+
+#title-img{
+  width: 40%;
+  height: 400px;
+}
+
+.qier-img{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#qier-img{
+  margin-left: 300px;
+}
 .button-group {
   width: 100%;
   height: 100%;
-  margin-top: 15%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -124,7 +151,7 @@ export default {
   margin: 20px;
 }
 .profile-space {
-  margin-top: 10%;
+  margin-top: 2%;
   padding-right: 10%;
   display: flex;
   justify-content: flex-end;
