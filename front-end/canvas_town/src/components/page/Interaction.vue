@@ -356,12 +356,12 @@ export default {
       console.log('上传文件相关')
       console.log(file)
       console.log(fileList)
-      // let socket = this.$socket
-      // let _this = this
+      let socket = this.$socket
+      let _this = this
       // this.$socket.emit('audiobuffer', this.socketId, 'buffer')
       if(this.change_file < 1) {
         //发送文件
-        // socket.emit('audiobuffer', _this.socketId, file.raw)
+        socket.emit('audiobuffer', _this.socketId, file.raw)
         this.finish_record  = true
         this.buffer = file.raw
       }
@@ -487,6 +487,7 @@ export default {
     this.$socket.emit('get room', this.$socket.id)
     let audio = document.getElementById('myaudio')
     audio.src = "/Mojito.mp3"
+    audio.volume = 0
     this.loadMusicView()
   },
   sockets: {
@@ -568,7 +569,7 @@ export default {
       //将消息显示
       if(msg.indexOf(this.c_result) != -1) {
         this.items.push({ message: '**********' });
-        alert('您的内容包含了正确答案')
+        alert('包含正确答案')
       } else{
         this.items.push({ message: msg });
       }
