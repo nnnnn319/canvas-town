@@ -2,7 +2,9 @@
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png">
     <Home></Home> -->
-    <router-view />
+ 
+  <router-view ></router-view>
+
   </div>
 </template>
 
@@ -10,7 +12,25 @@
 // import Home from './components/common/Home.vue'
 
 export default {
-  name: 'App'
+  name: 'App',
+  // provide(){
+  //   return{
+  //     reload:this.reload
+  //   }
+  // },
+  data() {
+    return {
+      // isRouterAlive:true
+    }
+  },
+  // methods: {
+  //   reload(){
+  //     this.isRouterAlive =false
+  //     this.$nextTick(function(){
+  //       this.isRouterAlive=true
+  //     })
+  //   }
+  // },
 }
 </script>
 

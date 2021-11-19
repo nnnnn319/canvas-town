@@ -118,6 +118,17 @@ export default {
       this.$router.push("/")
     }
   },
+  sockets: {
+    msg(len) {
+      if(len > 6) {
+        alert('房间人数已达上限')
+      } else {
+        this.$router.push({
+          path: '/interaction'
+        })
+      }
+    }
+  },
   computed: {
     username: function () { return localStorage.getItem(("name")) }
   }

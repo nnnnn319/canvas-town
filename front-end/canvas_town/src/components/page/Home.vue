@@ -156,6 +156,8 @@ button:focus {
 .bounce {
    text-align: center;
   font-size: 200px;
+   position: relative;
+   top: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
