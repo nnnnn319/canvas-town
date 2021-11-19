@@ -1,16 +1,15 @@
 <template>
     <div class="interact">
       <div class="interact-contain">
-        <div class="header">
-          <div class="logo">
-            倒放挑战1号房间
-          </div>
-          <div v-if="this.isQing">
+<!--        <div class="header">-->
+<!--          -->
+<!--          <i class="el-icon-close exit" @click="exit"></i>-->
+<!--        </div>-->
+
+        <div class="room">
+          <div v-if="this.isQing" class="question">
             {{this.q_username}}正在出题
           </div>
-          <i class="el-icon-close exit" @click="exit"></i>
-        </div>
-        <div class="room">
           <!-- 左侧聊天区域 -->
           <div class="room-left">
             <div class="left-box">
@@ -38,6 +37,7 @@
             </div>
             <!-- 音乐可视化区域 -->
             <div class="center-box">
+
               <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
               <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
               <!--上传文件-->
@@ -78,6 +78,11 @@
         </div>
         <!--下侧输入区域-->
         <div v-show="(this.q_socket == this.socketId)" class="file-load">
+          <el-switch
+                  v-model="upload_value"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949">
+          </el-switch>
           <div class="upload_audio">
             <el-upload
                     class="upload-demo"
@@ -85,32 +90,31 @@
                     action="#"
                     :limit="1"
                     :on-change="handleChange"
-                    :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
+                    :file-list="fileList"
+                    v-if="!upload_value">
+              <el-button size="small" type="primary" class="click_sub" style="border-left: 3px">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
             </el-upload>
             <!--录音区域-->
-            <div class="record_region">
+            <div class="record_region" v-if="upload_value">
               <!--                  <el-button size="medium"  >record</el-button>-->
               <el-button type="primary" size='medium' icon="el-icon-microphone" class="record-btn"></el-button>
               <audio controls class="audio-player"></audio>
             </div>
           </div>
           <div>
-
-            <div style="display: flex">
-              <label>请输入答案</label>
+            <div style="display: flex" >
+              <label style="margin-right: 10px">请输入答案:</label>
               <el-input v-model="result" placeholder="请输入内容" class="result_input"></el-input>
               <!--                  <el-button ></el-button>-->
               <b-button variant="outline-primary" @click="submit_result()">提交</b-button>
             </div>
-
           </div>
         </div>
-        <div v-show="isAnswer">
+        <div v-show="isAnswer" class="answer_result">
           <!--            //控制输出-->
           <label>请输入答案</label>
-          <el-input v-model="self_result" placeholder="请输入内容"></el-input>
+          <el-input v-model="self_result" placeholder="请输入内容" style="width: 200px"></el-input>
           <el-button @click="submit_self_result()">提交</el-button>
         </div>
         <div>
@@ -128,6 +132,10 @@ export default {
   },
   data () {
     return {
+      buffer: '',
+      finish_record: false,
+      finish_result: false,
+      upload_value: true,
       //socketId 每次发送请求都要携带
       socketId: '1',
       //房间成员
@@ -246,15 +254,18 @@ export default {
     },
     //上传文件
     handleChange (file, fileList) {
+      this.finish_result = true
       console.log('上传文件相关')
       console.log(file)
       console.log(fileList)
-      let socket = this.$socket
-      let _this = this
+      // let socket = this.$socket
+      // let _this = this
       // this.$socket.emit('audiobuffer', this.socketId, 'buffer')
       if(this.change_file < 1) {
         //发送文件
-        socket.emit('audiobuffer', _this.socketId, file.raw)
+        // socket.emit('audiobuffer', _this.socketId, file.raw)
+        this.finish_record  = true
+        this.buffer = file.raw
       }
       this.change_file++
       if(this.change_file == 3) {
@@ -369,7 +380,14 @@ export default {
     },
     //上传答案
     submit_result() {
-      this.$socket.emit('result', this.socketId, this.result)
+      this.finish_result = true
+      if(this.finish_result && this.finish_record) {
+        this.$socket.emit('result', this.socketId, this.result)
+        this.$socket.emit('audiobuffer', this.socketId, this.buffer)
+      } else {
+        alert('上传内容不全')
+      }
+
       this.result = ''
     },
     //回答-自己的答案
@@ -400,15 +418,16 @@ export default {
                   console.log("授权成功！");
                   const mediaRecorder = new MediaRecorder(stream);
                   recordBtn.onclick = () => {
+                    console.log('录制音频')
                     if (mediaRecorder.state === "recording") {
                       mediaRecorder.stop();
-                      recordBtn.textContent = "record";
+                      recordBtn.textContent = "录制";
                       console.log("录音结束");
                     }
                     else {
                       mediaRecorder.start();
                       console.log("录音中...");
-                      recordBtn.textContent = "stop";
+                      recordBtn.textContent = "停止";
                     }
                     console.log("录音器状态：", mediaRecorder.state);
                   };
@@ -417,8 +436,10 @@ export default {
                   };
                   // eslint-disable-next-line no-unused-vars
                   mediaRecorder.onstop = (e) => {
+                    this.finish_record = true
                     var blob = new Blob(chunks, { type: "audio/mpeg; codecs=opus" });
-                    this.$socket.emit('audiobuffer', this.socketId, blob)
+                    this.buffer = blob
+                    // this.$socket.emit('audiobuffer', this.socketId, blob)
                     chunks = [];
                     var audioURL = window.URL.createObjectURL(blob);
                     player.src = audioURL;
@@ -500,6 +521,8 @@ export default {
       //修改变量正在出题
       this.isQing = true
       this.q_socket = mem
+      this.finish_record = false
+      this.finish_result = false
       //获取username
       for(let i in this.users) {
         if(this.users[i].id === mem) {
@@ -572,12 +595,13 @@ export default {
 .interact {
   /*display: flex;*/
   position: absolute;
+  width:100%;
   /*justify-content: center;*/
   /*align-items: center;*/
-  width: 100%;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+
 }
 .header {
   display: flex;
@@ -621,7 +645,7 @@ export default {
   align-self: center;
   display: flex;
   flex-direction: row;
-  height: 498px;
+  height: 400px;
 }
 .chat-contain {
   padding: 10px;
@@ -637,7 +661,7 @@ export default {
 #chat-content {
   /*border: solid 1px rgba(255, 255, 255, 0.3);*/
   font-size: 14px;
-  height: 390px;
+  height: 300px;
   width: 280px;
   border-radius: 10px;
   margin: 5px;
@@ -846,15 +870,33 @@ li:last-child {
   .record_region {
     display: flex;
     align-items: center;
+    width:350px;
+    margin-left: 20px;
   }
   .audio-player{
     height: 30px;
   }
   .upload_audio{
-    display: flex;
-    justify-content: space-around;
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+    height:70px;
+    width: 350px;
   }
 .result_input {
   width: 50%;
 }
+  .file-load{
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-top: 20px;
+  }
+  .question {
+    position: absolute;
+  }
+
+  .answer_result {
+    display: flex;
+  }
+
 </style>

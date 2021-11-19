@@ -75,9 +75,7 @@ export default {
       console.log("房间信息", this.roomNumber)
       //加入房间  发送socketio请求
       this.$socket.emit('room', this.$socket.id, this.roomNumber, localStorage.getItem("name"))
-      this.$router.push({
-        path: '/interaction'
-      })
+
     },
     resetModal: function () {
       this.form = {
@@ -103,6 +101,17 @@ export default {
       localStorage.removeItem("name")
       // 跳转到引导页
       this.$router.push("/")
+    }
+  },
+  sockets: {
+    msg(len) {
+      if(len > 6) {
+        alert('房间人数已达上限')
+      } else {
+        this.$router.push({
+          path: '/interaction'
+        })
+      }
     }
   },
   computed: {
