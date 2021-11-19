@@ -25,7 +25,7 @@ export default {
       Tip: ''
     }
   },
-  
+    
   components:{
     RadioC,
   },

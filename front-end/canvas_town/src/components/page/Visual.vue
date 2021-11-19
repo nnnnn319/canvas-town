@@ -8,16 +8,16 @@
     </canvas>
     <!-- 给子组件绑定transmit自定义事件v-on:transmit="getMusic" -->
   <div class="move">
-      <Interaction  style="position:absolute; left: 50%;
+      <!-- <Interaction  style="position:absolute; left: 50%;
    top: 50%;
-  transform: translate(-50%,-50%);"></Interaction>
+  transform: translate(-50%,-50%);"></Interaction> -->
   </div>
  
    </div>
 </template>
 
 <script>
-import Interaction from './Interaction.vue'
+// import Interaction from './Interaction.vue'
 
 export default {
   name:'Visual',
@@ -28,8 +28,9 @@ export default {
     }
   
   },
+
   components:{
-    Interaction,
+    // Interaction,
   },
   methods: {
     // 从子组件获取音乐
