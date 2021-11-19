@@ -38,43 +38,10 @@
             </div>
             <!-- 音乐可视化区域 -->
             <div class="center-box">
-
               <el-button type="primary" v-if="userSelf.userType === 'admin'">开始游戏</el-button>
               <!--          <el-button type="success" @click="readyGame($event)" :class="{readybtn:userSelf.ready}">准备</el-button>-->
               <!--上传文件-->
-              <div v-show="(this.q_socket == this.socketId)">
-                <br/>
-                <br/>
-                <el-upload
-                        class="upload-demo"
-                        multiple
-                        action="#"
-                        :limit="1"
-                        :on-change	="handleChange"
-                        :file-list="fileList">
-                  <el-button size="small" type="primary">点击上传</el-button>
-                  <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
-                </el-upload>
-                <!--录音区域-->
-                <div class="app">
-                  <button class="record-btn">record</button>
-                  <audio controls class="audio-player"></audio>
-                </div>
-                <div>
-                  <label>请输入答案</label>
-                  <el-input v-model="result" placeholder="请输入内容"></el-input>
-                  <el-button @click="submit_result()">提交</el-button>
-                </div>
-              </div>
-              <div v-show="isAnswer">
-                <!--            //控制输出-->
-                <label>请输入答案</label>
-                <el-input v-model="self_result" placeholder="请输入内容"></el-input>
-                <el-button @click="submit_self_result()">提交</el-button>
-              </div>
-              <div>
-                {{judge_result}}
-              </div>
+
             </div>
           </div>
           <!-- 右侧头像区域 -->
@@ -108,6 +75,46 @@
               </el-scrollbar>
             </div>
           </div>
+        </div>
+        <!--下侧输入区域-->
+        <div v-show="(this.q_socket == this.socketId)" class="file-load">
+          <div class="upload_audio">
+            <el-upload
+                    class="upload-demo"
+                    multiple
+                    action="#"
+                    :limit="1"
+                    :on-change="handleChange"
+                    :file-list="fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传音频文件</div>
+            </el-upload>
+            <!--录音区域-->
+            <div class="record_region">
+              <!--                  <el-button size="medium"  >record</el-button>-->
+              <el-button type="primary" size='medium' icon="el-icon-microphone" class="record-btn"></el-button>
+              <audio controls class="audio-player"></audio>
+            </div>
+          </div>
+          <div>
+
+            <div style="display: flex">
+              <label>请输入答案</label>
+              <el-input v-model="result" placeholder="请输入内容" class="result_input"></el-input>
+              <!--                  <el-button ></el-button>-->
+              <b-button variant="outline-primary" @click="submit_result()">提交</b-button>
+            </div>
+
+          </div>
+        </div>
+        <div v-show="isAnswer">
+          <!--            //控制输出-->
+          <label>请输入答案</label>
+          <el-input v-model="self_result" placeholder="请输入内容"></el-input>
+          <el-button @click="submit_self_result()">提交</el-button>
+        </div>
+        <div>
+          {{judge_result}}
         </div>
       </div>
     </div>
@@ -428,17 +435,20 @@ export default {
     }
 
   },
+  beforeCreate () {
+  },
   created () {
+
   },
   mounted () {
-    console.log('page mounted')
     //连接成功 获取ID
     this.socketId = this.$socket.id
     console.log(this.socketId)
     //获取房间成员函数
-    this.sendRoomNum()
+    // this.sendRoomNum()
     //录制音频函数
     this.record()
+    this.$socket.emit('get room', this.$socket.id)
 
   },
   sockets: {
@@ -597,9 +607,12 @@ export default {
 .center-box {
 
 }
+.room {
+  background-color: #0DF2DE;
+}
 .room-left {
   flex: 1;
-  background: url("~@/assets/img/1.png");
+  /*background: url("~@/assets/img/1.png");*/
   align-self: center;
   display: flex;
   flex-direction: row;
@@ -772,9 +785,9 @@ li:last-child {
   background-color: #a6e3e9;
   padding: 10px 20px;
 }
-.el-button + .el-button {
-  margin-left: 0;
-}
+/*.el-button + .el-button {*/
+/*  margin-left: 0;*/
+/*}*/
 .readyGame {
   width: 85px;
   height: 35px;
@@ -802,8 +815,6 @@ li:last-child {
 }
 .upload-demo {
   text-align: center;
-  position: absolute;
-  top: 230px;
 }
 .profile-space {
   display: flex;
@@ -816,5 +827,24 @@ li:last-child {
 }
 #profile-name {
   margin-left: 10px;
+}
+
+  /*//录音相关*/
+.record-btn {
+  height: 20px;
+}
+  .record_region {
+    display: flex;
+    align-items: center;
+  }
+  .audio-player{
+    height: 30px;
+  }
+  .upload_audio{
+    display: flex;
+    justify-content: space-around;
+  }
+.result_input {
+  width: 50%;
 }
 </style>

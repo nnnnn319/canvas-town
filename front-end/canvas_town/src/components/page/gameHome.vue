@@ -71,6 +71,11 @@ export default {
     addRoom: function () {
       console.log("你加入了房间")
       console.log("房间信息", this.roomNumber)
+      //加入房间  发送socketio请求
+      this.$socket.emit('room', this.$socket.id, this.roomNumber)
+      this.$router.push({
+        path: '/interaction'
+      })
     },
     resetModal: function () {
       this.form = {
