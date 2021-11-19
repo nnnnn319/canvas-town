@@ -1,23 +1,23 @@
 <template>
     <div class="interact">
       <div class="interact-contain">
-        <div class="header">
-          <div class="logo">
-            倒放挑战1号房间
-          </div>
-          <div v-if="this.isQing">
-            {{this.q_socket}}正在出题
-          </div>
-          <i class="el-icon-close exit" @click="exit"></i>
-        </div>
+<!--        <div class="header">-->
+<!--&lt;!&ndash;          <div class="logo">&ndash;&gt;-->
+<!--&lt;!&ndash;            倒放挑战1号房间&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          <div v-if="this.isQing">&ndash;&gt;-->
+<!--&lt;!&ndash;            {{this.q_socket}}正在出题&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          <i class="el-icon-close exit" @click="exit"></i>&ndash;&gt;-->
+<!--        </div>-->
         <div class="room">
           <!-- 左侧聊天区域 -->
           <div class="room-left">
             <div class="left-box">
-              <div class="time">
-                <i class="el-icon-alarm-clock"></i>10s
+              <div class="time" >
+                <i class="el-icon-alarm-clock"></i>{{percentage}}s
               </div>
-              <el-progress :percentage="percentage" :format="format"></el-progress>
+<!--              <el-progress :percentage="percentage" :format="format"></el-progress>-->
               <!--              <div id="progressBar" style="width:100%;height:2px;background-color:teal;">&nbsp;</div>-->
               <div class="chat">
                 <div id="chat-father" ref="chatInnerDiv">
@@ -48,7 +48,7 @@
           <div class="right-box">
             <div class="users">
               <el-scrollbar>
-                <ul>
+                <ul class="ul-l">
                   <li v-for="user in users" :key="user.id">
                     <div class="user">
                       <i class="el-icon-microphone" v-if="user.status" :class="{microphone:user.status}"></i>
@@ -159,7 +159,7 @@ export default {
       //判断结果
       judge_result: '',
       input2: '',
-      percentage: 10,
+      percentage: 0,
       allContent: [],
       items: [{ message: 'test sentence1' }, { message: 'test sentence2' }],
       users: [],
@@ -514,7 +514,7 @@ export default {
     },
     time (time) {
       console.log(time)
-      this.percentage = time*2
+      this.percentage = time
       if(time === 1) {
         this.isQing = false
       }
@@ -689,8 +689,12 @@ export default {
 }
 .right-box {
   float: right;
+  background-color: white;
 }
 
+.ul-l > li {
+  border: 0px;
+}
 .exit {
   font-size: 31px;
   font-weight: bold;
@@ -781,9 +785,9 @@ li:last-child {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 3px solid #000;
-  border-radius: 20px;
-  background-color: #a6e3e9;
+  /*border: 3px solid #000;*/
+  /*border-radius: 20px;*/
+  /*background-color: #a6e3e9;*/
   padding: 10px 20px;
 }
 /*.el-button + .el-button {*/
