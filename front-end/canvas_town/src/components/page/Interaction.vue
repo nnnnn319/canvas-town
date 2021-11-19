@@ -37,9 +37,13 @@
               </div>
             </div>
             <!-- 音乐可视化区域 -->
-                        <Rhythm style="position:absolute; left: 50%;
-   top: 50%;
-  transform: translate(-50%,-50%);"></Rhythm>
+<!--                        <Rhythm style="position:absolute; left: 50%;-->
+<!--   top: 50%;-->
+<!--  transform: translate(-50%,-50%);"></Rhythm>-->
+            <div>
+              <audio crossOrigin="anonymous" id="myaudio" :src="audioSrc" display="none"></audio>
+              <canvas id="canvas"></canvas>
+            </div>
 
 
             <div class="center-box">
@@ -130,17 +134,19 @@
     </div>
 </template>
 <script scope>
-import Rhythm from '../../plugins/Rhythm.vue';
+// import Rhythm from '../../plugins/Rhythm.vue';
 // import ChooseQestion from '../common/ChooseQestion.vue'
 export default {
   name: 'Interaction',
   components: {
-    Rhythm
+    // Rhythm
     // ChooseQestion
   },
 
   data () {
     return {
+      s: '../../assets/kanong.mp3',
+      audioSrc: '../../assets/kanong.mp3',
       buffer: '',
       finish_record: false,
       finish_result: false,
@@ -168,7 +174,7 @@ export default {
       //绑定组件答案
       result: '',
       //不绑定
-      c_result: '',
+      c_result: 'undefined',
       //是否可以开始答题
       isAnswer: false,
       //自己给出的答案
@@ -189,6 +195,59 @@ export default {
     }
   },
   methods: {
+    //音乐可视化
+    btn() {
+      var oAudio = document.getElementById('myaudio');
+      oAudio.play();
+      // 创建音频上下文对象
+      var oCtx = new AudioContext();
+      // 创建媒体源
+      var audioSrc = oCtx.createMediaElementSource(oAudio);
+      // 创建分析机
+      var analyser = oCtx.createAnalyser();
+      // 媒体源与分析机连接
+      audioSrc.connect(analyser);
+      // 输出的目标：将分析机分析出来的处理结果与目标点（耳机/扬声器）连接
+      analyser.connect(oCtx.destination);
+      // 利用cancas渐变进行音频绘制
+      var canvas =document.getElementById('canvas')
+      var ctx = canvas.getContext('2d');
+      canvas.width = 500;
+      canvas.height = 500;
+      var oW = canvas.width;
+      var oH = canvas.height;
+      //线性渐变
+      var color1 = ctx.createLinearGradient(oW / 2, oH / 2 - 30, oW / 2, oH / 2 - 100);
+      var color2 = ctx.createLinearGradient(oW / 2, oH / 2 + 30, oW / 2, oH / 2 + 100);
+      color1.addColorStop(0, '#BF93EA');
+      color1.addColorStop(.5, '#10FDFD');
+      color1.addColorStop(1, '#A5FE8A');
+      color2.addColorStop(0, '#BF93EA');
+      color2.addColorStop(.5, '#10FDFD');
+      color2.addColorStop(1, '#A5FE8A');
+      // 音频图的条数
+      var count = 250;
+      // 缓冲区:进行数据的缓冲处理，转换成二进制数据
+      var voiceHeight = new Uint8Array(analyser.frequencyBinCount);
+      function  draw() {
+        // 将当前的频率数据复制到传入的无符号字节数组中，做到实时连接
+        analyser.getByteFrequencyData(voiceHeight);
+        // 自定义获取数组里边数据的频步
+        var step = Math.round(voiceHeight.length / count);
+        ctx.clearRect(0, 0, oW, oH);
+        for (var i = 0; i < count; i++) {
+          var audioHeight = voiceHeight[step * i];
+          ctx.fillStyle = color1;
+          ctx.fillRect(oW / 2 + (i * 10), oH / 2, 3, -audioHeight);
+          ctx.fillRect(oW / 2 - (i * 10), oH / 2, 3, -audioHeight);
+          ctx.fillStyle = color2;
+          ctx.fillRect(oW / 2 + (i * 10), oH / 2, 3, audioHeight);
+          ctx.fillRect(oW / 2 - (i * 10), oH / 2, 3, audioHeight);
+        }
+        window.requestAnimationFrame(draw);
+      }
+      draw();
+    },
     //   展开快捷会话的弹窗
     unfold () { //点击聊天气泡触发该函数
       // 将输入push到数组中
@@ -281,100 +340,16 @@ export default {
         this.change_file = 0
       }
     },
-    audioBufferToBlob(audioBuffer) {
-      // Float32Array samples
-      const [left] =  [audioBuffer.getChannelData(0)]
-      // interleaved
-      const interleaved = new Float32Array(left.length)
-      for (let src=0, dst=0; src < left.length; src++, dst+=1) {
-        interleaved[dst] =   left[src]
-        // interleaved[dst+1] = right[src]
-      }
-      // get WAV file bytes and audio params of your audio source
-      const wavBytes = this.getWavBytes(interleaved.buffer, {
-        isFloat: true,       // floating point or 16-bit integer
-        numChannels: 1,
-        sampleRate: 48000,
-      })
-      const wav = new Blob([wavBytes], { type: "audio/mpeg; codecs=opus" })
-      return wav
-    },
-    getWavBytes(buffer, options) {
-      const type = options.isFloat ? Float32Array : Uint16Array
-      const numFrames = buffer.byteLength / type.BYTES_PER_ELEMENT
-
-      const headerBytes = this.getWavHeader(Object.assign({}, options, { numFrames }))
-      const wavBytes = new Uint8Array(headerBytes.length + buffer.byteLength);
-
-      // prepend header, then add pcmBytes
-      wavBytes.set(headerBytes, 0)
-      wavBytes.set(new Uint8Array(buffer), headerBytes.length)
-
-      return wavBytes
-    },
-// adapted from https://gist.github.com/also/900023
-// returns Uint8Array of WAV header bytes
-    getWavHeader(options) {
-      const numFrames =      options.numFrames
-      const numChannels =    options.numChannels || 2
-      const sampleRate =     options.sampleRate || 44100
-      const bytesPerSample = options.isFloat? 4 : 2
-      const format =         options.isFloat? 3 : 1
-
-      const blockAlign = numChannels * bytesPerSample
-      const byteRate = sampleRate * blockAlign
-      const dataSize = numFrames * blockAlign
-
-      const buffer = new ArrayBuffer(44)
-      const dv = new DataView(buffer)
-
-      let p = 0
-
-      function writeString(s) {
-        for (let i = 0; i < s.length; i++) {
-          dv.setUint8(p + i, s.charCodeAt(i))
-        }
-        p += s.length
-      }
-
-      function writeUint32(d) {
-        dv.setUint32(p, d, true)
-        p += 4
-      }
-
-      function writeUint16(d) {
-        dv.setUint16(p, d, true)
-        p += 2
-      }
-
-      writeString('RIFF')              // ChunkID
-      writeUint32(dataSize + 36)       // ChunkSize
-      writeString('WAVE')              // Format
-      writeString('fmt ')              // Subchunk1ID
-      writeUint32(16)                  // Subchunk1Size
-      writeUint16(format)              // AudioFormat
-      writeUint16(numChannels)         // NumChannels
-      writeUint32(sampleRate)          // SampleRate
-      writeUint32(byteRate)            // ByteRate
-      writeUint16(blockAlign)          // BlockAlign
-      writeUint16(bytesPerSample * 8)  // BitsPerSample
-      writeString('data')              // Subchunk2ID
-      writeUint32(dataSize)            // Subchunk2Size
-
-      return new Uint8Array(buffer)
-    },
     playSound(file){
-      //需要判断type 是audiobuffer 还是 file
       // var read = new FileReader();
       let context = new (window.AudioContext || window.webkitAudioContext)();
+      this.audioSrc = this.s
       context.decodeAudioData(file, function(buffer) {
         console.log('transform')
         Array.prototype.reverse.call( buffer.getChannelData(0) );
-
         // Array.prototype.reverse.call( buffer.getChannelData(1) );
         //扬声器直接播放
         // 设置数据
-
         var source = context.createBufferSource();
         source.buffer = buffer;
         // connect到扬声器
@@ -408,6 +383,7 @@ export default {
         for(let i in this.users) {
           if(this.users[i].id === this.socketId) {
             this.users[i].score = parseInt(this.users[i].score) + 5
+            this.$socket.emit('score', this.socketId, this.users[i].score)
           }
         }
       } else {
@@ -558,7 +534,7 @@ export default {
     chat_message(msg) {
       console.log("收到聊天信息 " + msg)
       //将消息显示
-      if(msg.contains(this.c_result)) {
+      if(msg.indexOf(this.c_result) != -1) {
         this.items.push({ message: '**********' });
         alert('您的内容包含了正确答案')
       } else{
@@ -589,6 +565,13 @@ export default {
         })
       }, 3000)
 
+    },
+    re_score(id) {
+      for(let i in this.users) {
+        if(this.users[i].id === id[0]) {
+          this.users[i].score = id[1]
+        }
+      }
     }
 
   },

@@ -230,6 +230,12 @@ io.on('connection', (socket) => {
       }
     })
   })
+  //加分
+  socket.on('score', (id, score) => {
+    console.log('score ' + score)
+    let room = socketRoom.get(id)
+    io.to(room).emit('re_score', id, score)
+  })
   //前端发送题目
   socket.on('get exam', (id, exam) => {
     let room = socketRoom.get(id)
